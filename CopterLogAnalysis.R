@@ -366,10 +366,12 @@ GetCombinedAngleData <- function(sections) {
   for (i in 1:length(angles)) {
     angle.sections <- sections[sections$cmd_angle == angles[i], ]
     count <- nrow(angle.sections)
+    speed.mean <- sum(angle.sections$gps_speed) / count
     mean.mean <- sum(angle.sections$mean) / count
     sum.stddeviation <- sqrt(sum(angle.sections$stddeviation ^2))
     combined[i, "cmd_angle"] <- angles[i]
     combined[i, "sect_count"] <- count
+    combined[i, "speed_mean"] <- speed.mean
     combined[i, "power_mean"] <- mean.mean
     combined[i, "power_stddev"] <- sum.stddeviation
 
@@ -380,13 +382,16 @@ GetCombinedAngleData <- function(sections) {
   return(combined)
 }
 
+
 #####################################################################
 #    HOVER - Static Analysis of one specific flight.
 #####################################################################
 
 if(exists("hoverlog")) {
-  print("Hoverlog...")
+  print("Hoverlog ... ")
   filename <- hoverlog
+  timestamp.start <- 195.776
+  timestamp.end <- 723.918
 
   cat("Load File ... ")
   logdata = read.csv(file = filename, sep = ",", header = FALSE, strip.white = TRUE, stringsAsFactors = FALSE)
@@ -399,29 +404,23 @@ if(exists("hoverlog")) {
   logdata.mode.cmd <- .data$mode.cmd
   logdata.gps <- .data$gps
 
-  cat("GenerateSections ... ")
-  #sections.file <- GenerateSections(logdata.mode.cmd, class, description)
+  cat("Generate Sections (fixed timestamps) ... ")
+  sections.file <- data.frame(
+    flight = "Hover 10min",
+    class = 1,
+    cmd_name = "LOITER_UNLIM",
+    timestamp_start = timestamp.start,
+    cmd_id_prev = 1,
+    cmd_id_this = 2,
+    timestamp_end = timestamp.end,
+    stringsAsFactors = FALSE
+  )
 
-  #if(filename == hoverlog) {
-    sections.file <- data.frame(
-      flight = "Hover 10min",
-      class = 1,
-      cmd_name = "LOITER_UNLIM",
-      timestamp_start = 195.776,
-      cmd_id_prev = 1,
-      cmd_id_this = 2,
-      timestamp_end = 723.918,
-      stringsAsFactors = FALSE
-    )
-  #}
-
-  #cat("AddMovement ... ")
-  #sections.file <- AddMovementData(sections.file, logdata.mode.cmd, logdata.gps)
   cat("AddConsumption ... ")
   sections.file <- AddConsumptionData(sections.file, logdata.curr)
   cat("\n")
 
-  logdata.curr.hover <- logdata.curr[(logdata.curr$TimeRelS >= 195.776 & logdata.curr$TimeRelS <= 723.918), ]
+  logdata.curr.hover <- logdata.curr[(logdata.curr$TimeRelS >= timestamp.start & logdata.curr$TimeRelS <= timestamp.end), ]
 
   p <- plot_ly(logdata.curr, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]")
   p <- add_markers(p, x = logdata.mode$TimeRelS, y = 5, text = paste('MODE', logdata.mode$Mode, sep=' '), name = "modes")
@@ -435,17 +434,28 @@ if(exists("hoverlog")) {
   p3 <- plot_ly(logdata.curr.hover, x = ~Power, type = "histogram")
   p3
   plotly_POST(p3, filename = "HoverSteadyHistogram")
+  hover.mean <- mean(logdata.curr.hover$Power)
+  hover.stddeviation <- sqrt(var(logdata.curr.hover$Power))
+  
+  hover.curr.mean1 <- mean(logdata.curr.hover$Curr)
+  hover.curr.mean2 <- 60*60 / 1000 * (tail(logdata.curr.hover,1)[,"CurrTot"] - head(logdata.curr.hover,1)[,"CurrTot"]) / ((tail(logdata.curr.hover,1)[,"TimeRelS"] - head(logdata.curr.hover,1)[,"TimeRelS"]))
 
-
+  # H O V E R   R E S U L T S
   # TimeRelS_start = 195.776
   # TimeRelS_end = 723.918
   # Time Diff = 528,142 sec (= 8min 48 sec)
-  # power mean   262.7 W
-  # power stddev 5.2 W
+  # power mean = 262.7 W
+  # power stddev = 5.2 W
+  # current mean = 18.09 A
   # current consumption total 3365-683 = 2682 mAh
+  # current consumption total by seconds 2682/528 * (60*60/1000) = 18.29 mA
   # power consumption total 47.71570-10.25866 = 37.45704 Wh
-  # power consumption per second = 0,07092 Wh
+
+  remove(filename, timestamp.start, timestamp.end)
+  remove(hover.curr.mean1, hover.curr.mean2)
+  remove(p, p2, p3)
 }
+
 
 #####################################################################
 #    MAIN
@@ -500,7 +510,14 @@ p <- plot_ly(logdata.curr, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7,
 #p <- add_trace(p, type="bar", x = logdata.cmd$TimeRelS, y = 420, opacity = 0.1, text=paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
 p
 #remove(p)
-plotly_POST(plotlyGraph, filename = "LastFlightPower")
+plotly_POST(p, filename = "LastFlightPower")
+
+# quick visual inspection
+plot(sections.all.filtered$mean, x = sections.all.filtered$cmd_angle)
+plot(combined$power_mean, x = combined$cmd_angle)
+
+plot(sections.all.filtered$gps_speed, x = sections.all.filtered$cmd_angle)
+plot(combined$speed_mean, x = combined$cmd_angle)
 
 #####################################################################
 # Graphing
