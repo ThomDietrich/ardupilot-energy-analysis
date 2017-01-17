@@ -291,10 +291,10 @@ AddMovementData <- function(sections, mode.cmd, gps) {
 
     sections[i, "interpretation"] <-
       if(cmd.angle == 0) {
-        if(cmd.distance == 0) "Hover" else "Straigth Forward"
+        if(cmd.distance == 0) "Hover" else "Straight Forward"
       }
-      else if(cmd.angle == +90) "Straigth Up"
-      else if(cmd.angle == -90) "Straigth Down"
+      else if(cmd.angle == +90) "Straight Up"
+      else if(cmd.angle == -90) "Straight Down"
       else if(cmd.angle > 0) "Rise at Angle"
       else if(cmd.angle < 0) "Decline at Angle"
       else warning()
@@ -303,7 +303,7 @@ AddMovementData <- function(sections, mode.cmd, gps) {
 }
 
 #####################################################################
-# Function: Calculte statistical consumption values
+# Function: Calculate statistical consumption values
 
 AddConsumptionData <- function(sections, curr) {
   for (i in 1:nrow(sections)) {
