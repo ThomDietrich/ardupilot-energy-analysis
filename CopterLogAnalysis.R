@@ -311,15 +311,18 @@ AddConsumptionData <- function(sections, curr) {
       sections[i, "n_rows"] <- NA
       sections[i, "mean"] <- NA
       sections[i, "stddeviation"] <- NA
+      sections[i, "current"] <- NA
       sections[i, "energy"] <- NA
       next()
     }
     # full sample data
-    delayed.start = sections[i, "timestamp_start"]
-    delayed.end = sections[i, "timestamp_end"]
-    temp.curr <- curr[(curr$TimeRelS >= delayed.start & curr$TimeRelS <= delayed.end), ]
+    time.start = sections[i, "timestamp_start"]
+    time.end = sections[i, "timestamp_end"]
+    temp.curr <- curr[(curr$TimeRelS >= time.start & curr$TimeRelS <= time.end), ]
     if (nrow(temp.curr) == 0) warning("temp.curr empty.")
+    energy.time <- time.end - time.start
     energy <- tail(temp.curr, 1)["CurrTot"]  - head(temp.curr, 1)["CurrTot"]
+    remove(time.start, time.end)
 
     # sample data without transition
     delayed.start = sections[i, "timestamp_start"] + transitionSampleSeconds
@@ -329,29 +332,38 @@ AddConsumptionData <- function(sections, curr) {
     if(nrow(temp.curr) <= minSamplesForMean) {
       sections[i, "mean"] <- NA
       sections[i, "stddeviation"] <- NA
+      sections[i, "current"] <- NA
       sections[i, "energy"] <- NA
+      sections[i, "energy_time"] <- NA
+      sections[i, "energy_current"] <- NA
       next()
     }
     times = c()
-    samples = c()
+    powers = c()
+    currents = c()
     for (j in 1:nrow(temp.curr)) {
       if (j == 1) next()
       step.time <- temp.curr[j, "TimeRelS"] - temp.curr[j-1, "TimeRels"]
-      step.sample <- temp.curr[j-1, "Power"]
+      step.power <- temp.curr[j-1, "Power"]
+      step.current <- temp.curr[j-1, "Curr"]
       #print(paste("Time", step.time, "mean", step.mean))
       times <- append(times, step.time)
-      samples <- append(samples, step.sample)
+      powers <- append(powers, step.power)
+      currents <- append(currents, step.current)
     }
 
     # resulting data
-    sections[i, "mean"] <- wtd.mean(samples, weights=times, na.rm=FALSE) # in [W]
-    sections[i, "stddeviation"] <- sqrt(wtd.var(samples, weights=times, na.rm=FALSE)) # in [W]
-    sections[i, "energy"] <- energy # in [mAh]
-
-    #print(wtd.quantile(samples, weights=times, probs=0.75, na.rm=FALSE))
+    sections[i, "mean"] <- wtd.mean(powers, weights=times, na.rm=FALSE)                # mean power over flight time, in [W]
+    sections[i, "stddeviation"] <- sqrt(wtd.var(powers, weights=times, na.rm=FALSE))   # in [W]
+    sections[i, "current"] <- wtd.mean(currents, weights=times, na.rm=FALSE)           # mean current, in [A]
+    sections[i, "energy"] <- energy                                                    # difference CurrTot before and after from full sample data, in [mAh]
+    sections[i, "energy_time"] <- energy.time                                          # full sample data time, in [s]
+    sections[i, "energy_current"] <- energy / energy.time * 60 * 60 / 1000             # full sample data energy by time, in [A]
+    
+    #print(wtd.quantile(powers, weights=times, probs=0.75, na.rm=FALSE))
 
     #plot_ly(temp.curr, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]") %>% add_lines(y=sections[i,"mean"], name="mean")
-    #plot_ly(x = samples, type = "histogram")
+    #plot_ly(x = powers, type = "histogram")
   }
   return(sections)
 }
@@ -368,16 +380,22 @@ GetCombinedAngleData <- function(sections) {
     count <- nrow(angle.sections)
     speed.mean <- sum(angle.sections$gps_speed) / count
     mean.mean <- sum(angle.sections$mean) / count
+    current.mean <- sum(angle.sections$current) / count
     sum.stddeviation <- sqrt(sum(angle.sections$stddeviation ^2))
-    combined[i, "cmd_angle"] <- angles[i]
-    combined[i, "sect_count"] <- count
-    combined[i, "speed_mean"] <- speed.mean
-    combined[i, "power_mean"] <- mean.mean
-    combined[i, "power_stddev"] <- sum.stddeviation
+    combined[i, "cmd_angle"] <- angles[i]            # angle for combination groups
+    combined[i, "sect_count"] <- count               # number of sections combined for mean
+    combined[i, "speed_mean"] <- speed.mean          # in [m/s]
+    combined[i, "power_mean"] <- mean.mean           # in [W]
+    combined[i, "power_stddev"] <- sum.stddeviation  # in [W]
+    combined[i, "current_mean"] <- current.mean      # in [A]
 
-    # energy_pm in [mAh/m]
+    # energy used per meter, in [mAh/m]
     combined[i, "energy_pm_mean"] <- wtd.mean(angle.sections$energy / angle.sections$gps_distance, weights=angle.sections$gps_distance, na.rm=FALSE)
     combined[i, "energy_pm_stddev"] <- sqrt(wtd.var(angle.sections$energy / angle.sections$gps_distance, weights=angle.sections$gps_distance, na.rm=FALSE))
+  
+    # current calculated out of energy, in [A]
+    combined[i, "energy_current_mean"] <- wtd.mean(angle.sections$energy_current, weights=angle.sections$gps_distance, na.rm=FALSE)
+    combined[i, "energy_current_stddev"] <- sqrt(wtd.var(angle.sections$energy_current, weights=angle.sections$gps_distance, na.rm=FALSE))
   }
   return(combined)
 }
@@ -448,7 +466,7 @@ if(exists("hoverlog")) {
   # power stddev = 5.2 W
   # current mean = 18.09 A
   # current consumption total 3365-683 = 2682 mAh
-  # current consumption total by seconds 2682/528 * (60*60/1000) = 18.29 mA
+  # current consumption total by seconds 2682/528 * (60*60/1000) = 18.29 A
   # power consumption total 47.71570-10.25866 = 37.45704 Wh
 
   remove(filename, timestamp.start, timestamp.end)
