@@ -22,7 +22,7 @@
 remove(list = ls())
 
 #####################################################################
-# Logfiles to analyze
+# Logfiles to analyze ###############################################
 
 # Solo Hover/LOITER_UNLIM
 hoverlog <- "2016-11-06 16-41-01-hover.log"
@@ -65,7 +65,7 @@ names(logfiles) <- (c("filename", "description", "class", "weather"))
 # class: https://plot.ly/r/reference/#scatter-marker
 
 #####################################################################
-# Settings
+# Settings ##########################################################
 
 minSamplesForMean <- 30
 transitionSampleSeconds <- 3
@@ -76,7 +76,7 @@ batteryVoltageSoloCopter <- 4 * 3.7 # 14.8
 referenceVoltage         <- 4 * 3.7
 
 #####################################################################
-# Install packages, load libraries
+# Install packages, load libraries ##################################
 
 list.of.packages <- c("plotly", "Hmisc", "geosphere")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -99,11 +99,11 @@ Sys.setenv("plotly_api_key" = plotlyApiKey)
 remove(plotlyUsername, plotlyApiKey)
 
 #####################################################################
-# Load functions files
+# Load functions files ##############################################
 source("CopterLogAnalysisFunctions.R")
 
 #####################################################################
-#    HOVER - Static Analysis of one specific flight.
+#    HOVER - Static Analysis of one specific flight.   ##############
 #####################################################################
 
 if(exists("hoverlog")) {
@@ -182,7 +182,7 @@ if(exists("hoverlog")) {
 
 
 #####################################################################
-#    MAIN Analysis
+#    MAIN Analysis   ################################################
 #####################################################################
 
 sections.all <- data.frame()
@@ -225,7 +225,7 @@ combined <- GetCombinedAngleData(sections.all.filtered)
 
 
 #####################################################################
-# Plot first test graph
+# Plot first test graph #############################################
 
 x <- list(title = "Time [s]")
 y <- list(title = "Power [W]")
@@ -245,7 +245,7 @@ plot(sections.all.filtered$gps_speed, x = sections.all.filtered$cmd_angle)
 plot(combined$speed_mean, x = combined$cmd_angle)
 
 #####################################################################
-# Graphing
+# Graphing ##########################################################
 
 size.factor = 5
 
