@@ -25,42 +25,42 @@ remove(list = ls())
 # Logfiles to analyze ###############################################
 
 # Solo Hover/LOITER_UNLIM
-hoverlog <- "2016-11-06 16-41-01-hover.log"
+logfile.hover <- "2016-11-06 16-41-01-hover.log"
 
 #
 logfiles = data.frame()
 
 # CustomCopter
-###logfiles <- rbind(logfiles, c("2016-02-28 15-56-34.log", "2016-02-28 15-56-34 CC 'Quadrat'", "", ""), stringsAsFactors = FALSE)
-###logfiles <- rbind(logfiles, c("2016-02-28 17-27-54.log", "2016-02-28 17-27-54 CC '23' ersterTest", "", ""), stringsAsFactors = FALSE)
+###logfiles <- rbind(logfiles, c(01, "2016-02-28 15-56-34.log", "2016-02-28 15-56-34 CC 'Quadrat'", "", ""), stringsAsFactors = FALSE)
+###logfiles <- rbind(logfiles, c(02, "2016-02-28 17-27-54.log", "2016-02-28 17-27-54 CC '23' ersterTest", "", ""), stringsAsFactors = FALSE)
 #
-#logfiles <- rbind(logfiles, c("2016-03-11 11-51-26.log", "2016-03-11 11-51-26 CC '23'", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c("2016-03-11 12-01-04.log", "2016-03-11 12-01-04 CC '23'", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c("2016-03-11 12-09-31.log", "2016-03-11 12-09-31 CC '23' grAkku", 0, ""), stringsAsFactors = FALSE)
-##logfiles <- rbind(logfiles, c("2016-03-11 15-24-14.log", "2016-03-11 15-24-14 CC '23' grGeschw", 0, ""), stringsAsFactors = FALSE)
-##logfiles <- rbind(logfiles, c("2016-03-11 15-32-57.log", "2016-03-11 15-32-57 CC '23' klGeschw", 0, ""), stringsAsFactors = FALSE)
-##logfiles <- rbind(logfiles, c("2016-03-11 15-46-32.log", "2016-03-11 15-46-32 CC '23' grGewicht", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c("2016-04-30 17-45-40.log", "2016-04-30 17-45-40 CC 'Steig'", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c("2016-04-30 18-03-59.log", "2016-04-30 18-03-59 CC 'Steig'", 0, ""), stringsAsFactors = FALSE)
-##logfiles <- rbind(logfiles, c("2016-05-01 14-12-24.log", "2016-05-01 14-12-24 CC 'Steig' Wind", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c("2016-10-23 13-44-35.log", "2016-10-23 13-44-35 CC 'Lw-Quadrat'", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c("2016-10-23 13-57-28.log", "2016-10-23 13-57-28 CC 'Lw-Benchmark'", 0, ""), stringsAsFactors = FALSE)
+#logfiles <- rbind(logfiles, c(03, "2016-03-11 11-51-26.log", "2016-03-11 11-51-26 CC '23'", 0, ""), stringsAsFactors = FALSE)
+#logfiles <- rbind(logfiles, c(04, "2016-03-11 12-01-04.log", "2016-03-11 12-01-04 CC '23'", 0, ""), stringsAsFactors = FALSE)
+#logfiles <- rbind(logfiles, c(05, "2016-03-11 12-09-31.log", "2016-03-11 12-09-31 CC '23' grAkku", 0, ""), stringsAsFactors = FALSE)
+##logfiles <- rbind(logfiles, c(06, "2016-03-11 15-24-14.log", "2016-03-11 15-24-14 CC '23' grGeschw", 0, ""), stringsAsFactors = FALSE)
+##logfiles <- rbind(logfiles, c(07, "2016-03-11 15-32-57.log", "2016-03-11 15-32-57 CC '23' klGeschw", 0, ""), stringsAsFactors = FALSE)
+##logfiles <- rbind(logfiles, c(08, "2016-03-11 15-46-32.log", "2016-03-11 15-46-32 CC '23' grGewicht", 0, ""), stringsAsFactors = FALSE)
+#logfiles <- rbind(logfiles, c(09, "2016-04-30 17-45-40.log", "2016-04-30 17-45-40 CC 'Steig'", 0, ""), stringsAsFactors = FALSE)
+#logfiles <- rbind(logfiles, c(10, "2016-04-30 18-03-59.log", "2016-04-30 18-03-59 CC 'Steig'", 0, ""), stringsAsFactors = FALSE)
+##logfiles <- rbind(logfiles, c(11, "2016-05-01 14-12-24.log", "2016-05-01 14-12-24 CC 'Steig' Wind", 0, ""), stringsAsFactors = FALSE)
+#logfiles <- rbind(logfiles, c(12, "2016-10-23 13-44-35.log", "2016-10-23 13-44-35 CC 'Lw-Quadrat'", 0, ""), stringsAsFactors = FALSE)
+#logfiles <- rbind(logfiles, c(13, "2016-10-23 13-57-28.log", "2016-10-23 13-57-28 CC 'Lw-Benchmark'", 0, ""), stringsAsFactors = FALSE)
 
 # SoloCopter
-logfiles <- rbind(logfiles, c("2016-10-23 14-12-01.log", "2016-10-23 14-12-01 Solo 'Lw-Quadrat'", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c("2016-10-23 14-32-45.log", "2016-10-23 14-32-45 Solo 'Lw-Benchmark' Akku a", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c("2016-10-23 14-41-58.log", "2016-10-23 14-41-58 Solo 'Lw-Benchmark' Akku b(Flug1)", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c("2016-10-23 14-49-50.log", "2016-10-23 14-49-50 Solo 'Lw-Benchmark' Akku b(Flug2)", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(14, "2016-10-23 14-12-01.log", "2016-10-23 14-12-01 Solo 'Lw-Quadrat'", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(15, "2016-10-23 14-32-45.log", "2016-10-23 14-32-45 Solo 'Lw-Benchmark' Akku a", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(16, "2016-10-23 14-41-58.log", "2016-10-23 14-41-58 Solo 'Lw-Benchmark' Akku b(Flug1)", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(17, "2016-10-23 14-49-50.log", "2016-10-23 14-49-50 Solo 'Lw-Benchmark' Akku b(Flug2)", 4, ""), stringsAsFactors = FALSE)
 
-logfiles <- rbind(logfiles, c("2016-10-27 17-19-01.log", "2016-10-27 17-19-01 Solo 'Lw-Quadrat' 3/4 Akku", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c("2016-10-27 17-25-25.log", "2016-10-27 17-25-25 Solo 'Lw-Quadrat' voller Akku", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c("2016-10-27 17-29-25.log", "2016-10-27 17-29-25 Solo 'Lw-Quadrat' 80%", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c("2016-10-27 17-33-10.log", "2016-10-27 17-33-10 Solo 'Lw-Benchmark' 67%", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c("2016-10-27 17-40-31.log", "2016-10-27 17-40-31 Solo 'Lw-Benchmark2' voller Akku", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c("2016-10-27 17-48-39.log", "2016-10-27 17-48-39 Solo 'Lw-Benchmark' bei 57%", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c("2016-10-27 17-54-43.log", "2016-10-27 17-54-43 Solo 'Lw-Benchmark2' voller Akku", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(18, "2016-10-27 17-19-01.log", "2016-10-27 17-19-01 Solo 'Lw-Quadrat' 3/4 Akku", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(19, "2016-10-27 17-25-25.log", "2016-10-27 17-25-25 Solo 'Lw-Quadrat' voller Akku", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(20, "2016-10-27 17-29-25.log", "2016-10-27 17-29-25 Solo 'Lw-Quadrat' 80%", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(21, "2016-10-27 17-33-10.log", "2016-10-27 17-33-10 Solo 'Lw-Benchmark' 67%", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(22, "2016-10-27 17-40-31.log", "2016-10-27 17-40-31 Solo 'Lw-Benchmark2' voller Akku", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(23, "2016-10-27 17-48-39.log", "2016-10-27 17-48-39 Solo 'Lw-Benchmark' bei 57%", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(24, "2016-10-27 17-54-43.log", "2016-10-27 17-54-43 Solo 'Lw-Benchmark2' voller Akku", 4, ""), stringsAsFactors = FALSE)
 
-names(logfiles) <- (c("filename", "description", "class", "weather"))
+names(logfiles) <- (c("id", "filename", "description", "class", "weather"))
 
 # class: https://plot.ly/r/reference/#scatter-marker
 
@@ -75,20 +75,23 @@ batteryVoltageCustomCopter   <- 3 * 3.7 # 11.1
 batteryVoltageSoloCopter <- 4 * 3.7 # 14.8
 referenceVoltage         <- 4 * 3.7
 
+# http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+graphCol1 <- "steelblue"
+graphCol2 <- "indianred"
+graphCol3 <- "gray70"
+
 #####################################################################
 # Install packages, load libraries ##################################
 
-list.of.packages <- c("plotly", "Hmisc", "geosphere")
+list.of.packages <- c("plotly", "Hmisc", "geosphere", "ggplot2", "cowplot", "tikzDevice")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
+sapply(list.of.packages, require, character.only = TRUE)
+lapply(list.of.packages, packageVersion)
 remove(list = c("list.of.packages", "new.packages"))
 
-library(plotly)
-library(Hmisc)
-library(geosphere)
-packageVersion('plotly')
-packageVersion('Hmisc')
-packageVersion('geosphere')
+### Update packages (from time to time!)
+#update.packages(checkBuilt=TRUE, ask=FALSE)
 
 # plotlyUsername <- "user"
 # plotlyApiKey <- "key"
@@ -98,6 +101,21 @@ Sys.setenv("plotly_username" = plotlyUsername)
 Sys.setenv("plotly_api_key" = plotlyApiKey)
 remove(plotlyUsername, plotlyApiKey)
 
+
+theme_custom <- function () { 
+  theme_light() %+replace% 
+    theme(
+      panel.background  = element_blank(),
+      axis.title = element_text(size = rel(0.8)),
+      axis.ticks=element_blank(),
+      panel.border=element_blank()
+    )
+}
+theme_set(theme_custom())
+
+options(tikzDefaultEngine = "xetex")
+tikzLocation = "../Dissertation/tikz/"
+
 #####################################################################
 # Load functions files ##############################################
 source("CopterLogAnalysisFunctions.R")
@@ -106,9 +124,9 @@ source("CopterLogAnalysisFunctions.R")
 #    HOVER - Static Analysis of one specific flight.   ##############
 #####################################################################
 
-if(exists("hoverlog")) {
+if(exists("logfile.hover")) {
   print("Hoverlog ... ")
-  filename <- hoverlog
+  filename <- logfile.hover
   timestamp.start <- 195.776
   timestamp.end <- 723.918
 
@@ -147,22 +165,36 @@ if(exists("hoverlog")) {
   p <- add_markers(p, x = logdata.cmd$TimeRelS, y = logdata.cmd$CId / 5, text = paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
   p <- add_trace(p, type="bar", x = logdata.cmd$TimeRelS, y = 25, opacity = 0.1, text=paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
   p
-  api_create(p, filename = "Hover")
+  #api_create(p, filename = "Hover")
   p2 <- plot_ly(logdata.curr.hover, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]")
   p2
-  api_create(p2, filename = "HoverSteady")
+  #api_create(p2, filename = "HoverSteady")
   p3 <- plot_ly(logdata.curr.hover, x = ~Power, type = "histogram")
   p3
-  api_create(p3, filename = "HoverSteadyHistogram")
-  hover.mean <- mean(logdata.curr.hover$Power)
-  hover.stddeviation <- sqrt(var(logdata.curr.hover$Power))
+  #api_create(p3, filename = "HoverSteadyHistogram")
+
+  # Duration of maneuver
+  hover.duration <- timestamp.end - timestamp.start
   
+  # Energy mean and stddev based on independent sample assumption
+  hover.powermean <- mean(logdata.curr.hover$Power)
+  hover.powermean.product <- mean(logdata.curr.hover$Power) * hover.duration / 3600
+  #hover.powermean.stddev <- sqrt(var(logdata.curr.hover$Power))
+  
+  # Energy mean based on integral (nearly identical)
+  hover.power.sum <- cumsum(logdata.curr.hover$Power[-nrow(logdata.curr.hover)] * diff(logdata.curr.hover$TimeRelS)) # in Ws
+  hover.power.sum <- tail(hover.power.sum, 1) # in Ws
+  hover.power.sum.mean <- hover.power.sum / hover.duration # in W
+  hover.power.sum <- hover.power.sum / 3600 # in Wh
+  
+  # Current stats (ignore!)
   hover.curr.mean <- mean(logdata.curr.hover$Curr)
   hover.curr.stddev <- sqrt(var(logdata.curr.hover$Curr))
+  hover.curr.meanTot <- 60*60 / 1000 * (tail(logdata.curr.hover,1)[,"CurrTot"] - head(logdata.curr.hover,1)[,"CurrTot"]) / ((tail(logdata.curr.hover,1)[,"TimeRelS"] - head(logdata.curr.hover,1)[,"TimeRelS"]))
   
   # for comparison and evaluation
-  hover.curr.meanTot <- 60*60 / 1000 * (tail(logdata.curr.hover,1)[,"CurrTot"] - head(logdata.curr.hover,1)[,"CurrTot"]) / ((tail(logdata.curr.hover,1)[,"TimeRelS"] - head(logdata.curr.hover,1)[,"TimeRelS"]))
-
+  hover.power.total <- (tail(logdata.curr.hover,1)[,"PowerTot"] - head(logdata.curr.hover,1)[,"PowerTot"]) # in Wh
+  
   # H O V E R   R E S U L T S
   # TimeRelS_start = 195.776
   # TimeRelS_end = 723.918
@@ -175,11 +207,40 @@ if(exists("hoverlog")) {
   # current consumption total by seconds 2682/528 * (60*60/1000) = 18.29 A
   # power consumption total 47.71570-10.25866 = 37.45704 Wh
 
-  #remove(filename, timestamp.start, timestamp.end)
-  #remove(hover.curr.mean1, hover.curr.mean2)
-  #remove(p, p2, p3)
+  remove(filename, timestamp.start, timestamp.end)
+  remove(p, p2, p3)
 }
 
+#####################################################################
+# Line+hist plot of hover maneuver ##################################
+
+line_hist_plot <- function(data, x, y, xlab = NULL, xlab2 = "Sample Count", ylab = NULL, ...) {
+  ## line plot
+  plot1 <- ggplot(data, aes(x, y), ...) +
+    #geom_point(color=graphCol3) +
+    geom_line(color=graphCol1) +
+    geom_hline(aes(yintercept=mean(y, na.rm=T)), color=graphCol3, linetype="dashed", size=1) +
+    scale_x_continuous(breaks = seq(min(x), max(x), 50)) +
+    labs(x=xlab, y=ylab) +
+    ylim(240, 290)
+  
+  ## histogram to the right
+  plot2 <- ggplot(data, aes(y), ...) +
+    geom_histogram(binwidth=0.8, fill=graphCol1) +
+    geom_density(aes(y=0.8 * ..count..), color=graphCol3, size=0.7) +
+    geom_vline(aes(xintercept=mean(y, na.rm=T)), color=graphCol3, linetype="dashed", size=1) +
+    labs(x="", y=xlab2) +
+    theme(axis.title.y=element_blank(), axis.text.y=element_blank()) +
+    xlim(240, 290) +
+    coord_flip()
+  
+  ## arrange both
+  plot_grid(plot1, plot2, rel_widths = c(3, 1))
+}
+
+tikz(paste(tikzLocation, "4_hover_linehist_R.tex", sep = "/"), width=6, height=2.5)
+line_hist_plot(data = logdata.curr.hover, x = logdata.curr.hover$TimeRelS-head(logdata.curr.hover$TimeRelS), y = logdata.curr.hover$Power, xlab = 'Time [s]', ylab = 'Power [W]')
+dev.off()
 
 #####################################################################
 #    MAIN Analysis   ################################################
@@ -187,7 +248,16 @@ if(exists("hoverlog")) {
 
 sections.all <- data.frame()
 
+logdata.all.filename = list()
+logdata.all.curr = list()
+logdata.all.mode = list()
+logdata.all.cmd = list()
+logdata.all.mode.cmd = list()
+logdata.all.gps = list()
+
+
 for (i in 1:nrow(logfiles)) {
+  id = as.integer(logfiles[i, "id"])
   filename = logfiles[i, "filename"]
   description = logfiles[i, "description"]
   class = as.integer(logfiles[i, "class"])
@@ -216,36 +286,154 @@ for (i in 1:nrow(logfiles)) {
   sections.file <- AddConsumptionData(sections.file, logdata.curr)
   sections.all <- rbind(sections.all, sections.file)
   cat("\n")
+
+  # logdata backup
+  logdata.all.filename[[id]] = filename
+  logdata.all.curr[[id]]     = logdata.curr
+  logdata.all.mode[[id]]     = logdata.mode
+  logdata.all.cmd[[id]]      = logdata.cmd
+  logdata.all.mode.cmd[[id]] = logdata.mode.cmd
+  logdata.all.gps[[id]]      = logdata.gps
+  
+  # Cleanup
+  remove(i, id, filename, description, class, sections.file)
+  remove(logdata)
+  remove(logdata.curr, logdata.mode, logdata.cmd, logdata.mode.cmd, logdata.gps)
 }
-remove(i, filename, description, class, sections.file)
+
+# Filter Sections Entries ###########################################
 
 sections.all.filtered <- sections.all[! is.na(sections.all$mean), ]
 
-combined <- GetCombinedAngleData(sections.all.filtered)
+# Calculate Combined Data ##########################################
 
+combined_angle_data <- GetCombinedAngleData(sections.all.filtered)
 
 #####################################################################
-# Plot first test graph #############################################
+# Individual Analysis and Diagrams ##################################
+#####################################################################
 
-x <- list(title = "Time [s]")
-y <- list(title = "Power [W]")
-p <- plot_ly(logdata.curr, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]") %>% layout(xaxis = x, yaxis = y)
-#p <- add_markers(p, x = logdata.mode$TimeRelS, y = 5, text = paste('MODE', logdata.mode$Mode, sep=' '), name = "modes")
-#p <- add_markers(p, x = logdata.cmd$TimeRelS, y = logdata.cmd$CId / 5, text = paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
-#p <- add_trace(p, type="bar", x = logdata.cmd$TimeRelS, y = 420, opacity = 0.1, text=paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
-p
-#remove(p)
-api_create(p, filename = "LastFlightPower")
+# 24 and 21 - long standby
+# 23 - good flight with peaks
 
-# quick visual inspection
-plot(sections.all.filtered$mean, x = sections.all.filtered$cmd_angle)
-plot(combined$power_mean, x = combined$cmd_angle)
+id <- 24
 
-plot(sections.all.filtered$gps_speed, x = sections.all.filtered$cmd_angle)
-plot(combined$speed_mean, x = combined$cmd_angle)
+ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
+  geom_line(color=graphCol1) +
+  #
+  geom_vline(xintercept=logdata.all.mode[[id]]$TimeRelS, color=graphCol2) +
+  geom_text(data=logdata.all.mode[[id]], aes(x=logdata.all.mode[[id]]$TimeRelS, y=rep(50, nrow(logdata.all.mode[[id]])), label=paste('MODE', logdata.all.mode[[id]]$Mode, sep=' ')), color=graphCol1, angle=90, vjust = 1.2, size=rel(3)) +
+  #
+  geom_bar(data=logdata.all.cmd[[id]], aes(x=logdata.all.cmd[[id]]$TimeRelS, y=rep(500, nrow(logdata.all.cmd[[id]]))), stat = "identity", width = 6, fill = alpha(logdata.all.cmd[[id]]$CId-12, 0.1)) +
+  #
+  #scale_x_continuous(breaks = seq(x0, x1, 50)) +
+  #xlim(0, 300) +
+  #ylim(0, 400) +
+  labs(x="Time [s]", y="Power [W]")
+
+#####################################################################
+# Complete flight plot ##############################################
+
+# Do not change! For results: 23
+id <- 23
+
+tikz(paste(tikzLocation, "4_complete_flight_", id, "_power_plot_R.tex", sep = ""), width=6, height=4)
+
+ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
+  geom_line(color=graphCol1) +
+  #
+  #geom_vline(xintercept=logdata.all.mode[[id]]$TimeRelS, color=graphCol2) +
+  #
+  #geom_text(data=logdata.all.mode[[id]],
+  #          aes(x=logdata.all.mode[[id]]$TimeRelS,
+  #              y=rep(100, nrow(logdata.all.mode[[id]])),
+  #              label=paste('MODE', logdata.all.mode[[id]]$Mode, sep=' ')),
+  #          color=graphCol3,
+  #          angle=90,
+  #          vjust = 1.6,
+  #          size=rel(3)) +
+  #
+  geom_bar(data=logdata.all.cmd[[id]],
+       aes(x=logdata.all.cmd[[id]]$TimeRelS,
+         y=rep(500, nrow(logdata.all.cmd[[id]]))),
+       stat = "identity",
+       width = 4,
+       fill = alpha((logdata.all.cmd[[id]]$CId-15)+3, 0.12)
+    ) +
+  #
+  coord_cartesian(xlim = c(60,330),ylim= c(0,410)) +
+  scale_x_continuous(breaks = seq(0, 750, 50)) +
+  labs(x="Time [s]", y="Power [W]")
+
+dev.off()
+
+#####################################################################
+# Standby energy plot ###############################################
+
+# Do not change! For results: 21
+id <- 21
+
+annotate.labels <- data.frame(
+  "x" = c(11, 20, 52, 131),
+  "label" = c("Log", "Initialize", "Standby", "Arm")
+)
+
+tikz(paste(tikzLocation, "4_flight_", id, "_standby_power_plot_R.tex", sep = ""), width=6, height=3)
+
+ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
+  geom_line(color=graphCol1) +
+  geom_vline(xintercept=annotate.labels$x, color=graphCol2) +
+  annotate("text", x = annotate.labels$x, rep(15, nrow(annotate.labels)), label = annotate.labels$label, color=graphCol3, angle=90, vjust=1.2, size=rel(3)) +
+  coord_cartesian(xlim = c(0,135),ylim= c(12,18)) +
+  scale_x_continuous(breaks = seq(0, 750, 20)) +
+  labs(x="Time [s]", y="Power [W]")
+
+dev.off()
+
+#####################################################################
+# Maneuver transition plot ##########################################
+
+# Do not change!
+# For results: 24
+id <- 24
+
+tikz(paste(tikzLocation, "4_maneuver_transition_flight_", id, "_power_plot_R.tex", sep = ""), width=6, height=3)
+
+ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
+  geom_line(color=graphCol1) +
+  coord_cartesian(xlim = c(175,215),ylim= c(150,350)) +
+  scale_x_continuous(breaks = seq(0, 750, 5)) +
+  labs(x="Time [s]", y="Power [W]")
+
+dev.off()
+
+#####################################################################
+# Combined data graphing ############################################
+#####################################################################
+
+#####################################################################
+# Speed from Angle relation plot ####################################
+
+tikz(paste(tikzLocation, "4_angle_speed_relation_plot_R.tex", sep = ""), width=6, height=2.5)
+
+ggplot(sections.all.filtered, aes(x=cmd_angle, y=gps_speed, group=cmd_angle)) +
+  geom_jitter(width=10,
+              color=alpha(graphCol3, 0.6)) +
+  geom_boxplot(width=12,
+               color=graphCol1,
+               fill=alpha("white", 0.4),
+               outlier.alpha = 0) +
+  #coord_cartesian(xlim = c(175,215),ylim= c(150,350)) +
+  scale_x_continuous(breaks = seq(-90, 90, 30)) +
+  labs(x="Angle [°]", y="Speed [m/s]")
+
+dev.off()
+
 
 #####################################################################
 # Graphing ##########################################################
+
+stop()
 
 size.factor = 5
 
@@ -292,6 +480,6 @@ layout(title = 'Flight Analysis',
 )
 plotlyGraph
 
-api_create(plotlyGraph, filename = "energyProfileGraph")
+#api_create(plotlyGraph, filename = "energyProfileGraph")
 
 remove(size.factor, sizes, colors, class)
