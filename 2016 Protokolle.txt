@@ -1,0 +1,86 @@
+2016-02-28 15-39-24
+In diesem Flug findet ihr eine längere Ruhephase im Loiter Modus. Zieht euch diesen heraus und ihr habt statistische Kennwerte für den Stand in der Luft.
+
+2016-02-28 15-56-34
+Hier ist der Autopilot in einem Quadrat auf 20 Metern Höhe geflogen. Es gab kaum Wind.
+
+2016-02-28 17-27-54
+Hier ist der Autopilot erneut ein Quadrat geflogen, allerdings mit zusätzlichen 30° steigenden/sinkenden Flügen. Am Ende ist der Copter auf der Stelle von 20 auf 60 Meter angestiegen und wieder herab gesunken.
+
+2016-02-28 17-42-01 
+ar als Wiederholung von Flug 3 mit einem größeren/schwereren Akku gedacht, musste ich aber kurz nach Start abbrechen, da ich falsche Statusdaten auf dem Laptop angezeigt bekommen habe. Bisheriger Akku hatte 2200, der schwerere Akku fasst 3000mAh. Eine kurze Strecke zur Auswertung sollte trotzdem dabei sein.
+
+
+
+2016-03-11
+ - trockenes Wetter, 4°C
+ - kaum Wind (11km/h laut Wetterbericht)
+ - normale Flugparameter: 500, 200, 250, 150, 500
+ - Gewicht kleiner Akku: 190g
+ - Gewicht großer Akku:  225g
+
+2016-03-11 11-51-26
+ - <Quadrat mit Höhenänderung 23.waypoints>
+ - normale Flugparameter
+ - kein Zusatzgewicht, keine Kameratechnik
+ - Akku-Aufladung nach dem Flug: 1028mAh
+
+2016-03-11 12-01-04
+ - Wiederholung
+ - <Quadrat mit Höhenänderung 23.waypoints>
+ - normale Flugparameter
+ - kein Zusatzgewicht, keine Kameratechnik
+ - Akku-Aufladung nach dem Flug: 897mAh
+
+2016-03-11 12-09-31
+ - Wiederholung mit großem Akku
+ - <Quadrat mit Höhenänderung 23.waypoints>
+ - normale Flugparameter
+ - größerer Akku (3000mAh) (+ 35g)
+ - Akku-Aufladung nach dem Flug: 929mAh
+
+2016-03-11 15-24-14
+ - Wiederholung mit höherer Geschwindigkeit
+ - <Quadrat mit Höhenänderung 23.waypoints>
+ - Flugparameter: 800, 200, 350, 250, 800
+ - kein Zusatzgewicht, keine Kameratechnik
+ - Akku-Aufladung nach dem Flug: 667mAh
+
+2016-03-11 15-32-57
+ - Wiederholung mit geringerer Geschwindigkeit
+ - <Quadrat mit Höhenänderung 23.waypoints>
+ - Flugparameter: 200, 200, 150, 50, 200
+ - kein Zusatzgewicht, keine Kameratechnik
+ - Akku-Aufladung nach dem Flug: 1611mAh
+
+2016-03-11 15-46-32
+ - Wiederholung mit hohem Gewicht
+ - <Quadrat mit Höhenänderung 23.waypoints>
+ - normale Flugparameter
+ - größerer Akku + kleiner Akku als Ballast (+225g)
+ - Akku-Aufladung nach dem Flug: 1045mAh
+
+
+
+
+2016-04-30
+ - trockenes Wetter, warm
+ - kein Wind
+
+2016-04-30 17-45-40
+ - <Steigfluege.waypoints>
+ - Flug bis WP13 ohne Probleme
+ - bei 106m Endhöhe wurde die GeoFence Sicherung aktiv: bei über 100m Höhe Wechsel in RTL
+ - RTL wurde sauber beendet
+ 
+2016-04-30 18-03-59
+ - <Steigfluege.waypoints>
+ - Wiederholung mit angepassten GeoFence Grenzen
+ - Route wurde vollständig und fehlerfrei abgeflogen
+ - Akku-Aufladung nach dem Flug: mAh
+
+2016-05-01 14-12-24
+Erneut Steigflüge, diesmal bei Wind
+
+2016-05-01 14-26-04
+kaum Wind. ValidierungsflugKurz

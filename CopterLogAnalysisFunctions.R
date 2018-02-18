@@ -135,7 +135,7 @@ ParseLogdata <- function(data) {
 #####################################################################
 # Function: Cut into seperate commands
 
-GenerateSections <- function(mode.cmd, class, descr) {
+GenerateSections <- function(mode.cmd, class, model, descr) {
   sections <- data.frame()
   in.auto.mode = FALSE
   for (i in 1:nrow(mode.cmd)) {
@@ -154,6 +154,7 @@ GenerateSections <- function(mode.cmd, class, descr) {
         sections <- rbind(sections, temp.section)
       }
       temp.section[1, "flight"] <- descr
+      temp.section[1, "model"] <- model
       temp.section[1, "class"] <- class
       temp.section[1, "cmd_name"] <- mode.cmd[i,"CName"]
       temp.section[1, "timestamp_start"] <- mode.cmd[i,"TimeRelS"]

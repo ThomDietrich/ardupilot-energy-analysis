@@ -31,36 +31,36 @@ logfile.hover <- "2016-11-06 16-41-01-hover.log"
 logfiles = data.frame()
 
 # CustomCopter
-###logfiles <- rbind(logfiles, c(01, "2016-02-28 15-56-34.log", "2016-02-28 15-56-34 CC 'Quadrat'", "", ""), stringsAsFactors = FALSE)
-###logfiles <- rbind(logfiles, c(02, "2016-02-28 17-27-54.log", "2016-02-28 17-27-54 CC '23' ersterTest", "", ""), stringsAsFactors = FALSE)
+###logfiles <- rbind(logfiles, c(01, "CC", "2016-02-28 15-56-34.log", "2016-02-28 15-56-34 'Quadrat'", "", ""), stringsAsFactors = FALSE)
+###logfiles <- rbind(logfiles, c(02, "CC", "2016-02-28 17-27-54.log", "2016-02-28 17-27-54 '23' ersterTest", "", ""), stringsAsFactors = FALSE)
 #
-#logfiles <- rbind(logfiles, c(03, "2016-03-11 11-51-26.log", "2016-03-11 11-51-26 CC '23'", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c(04, "2016-03-11 12-01-04.log", "2016-03-11 12-01-04 CC '23'", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c(05, "2016-03-11 12-09-31.log", "2016-03-11 12-09-31 CC '23' grAkku", 0, ""), stringsAsFactors = FALSE)
-##logfiles <- rbind(logfiles, c(06, "2016-03-11 15-24-14.log", "2016-03-11 15-24-14 CC '23' grGeschw", 0, ""), stringsAsFactors = FALSE)
-##logfiles <- rbind(logfiles, c(07, "2016-03-11 15-32-57.log", "2016-03-11 15-32-57 CC '23' klGeschw", 0, ""), stringsAsFactors = FALSE)
-##logfiles <- rbind(logfiles, c(08, "2016-03-11 15-46-32.log", "2016-03-11 15-46-32 CC '23' grGewicht", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c(09, "2016-04-30 17-45-40.log", "2016-04-30 17-45-40 CC 'Steig'", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c(10, "2016-04-30 18-03-59.log", "2016-04-30 18-03-59 CC 'Steig'", 0, ""), stringsAsFactors = FALSE)
-##logfiles <- rbind(logfiles, c(11, "2016-05-01 14-12-24.log", "2016-05-01 14-12-24 CC 'Steig' Wind", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c(12, "2016-10-23 13-44-35.log", "2016-10-23 13-44-35 CC 'Lw-Quadrat'", 0, ""), stringsAsFactors = FALSE)
-#logfiles <- rbind(logfiles, c(13, "2016-10-23 13-57-28.log", "2016-10-23 13-57-28 CC 'Lw-Benchmark'", 0, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(03, "CC", "2016-03-11 11-51-26.log", "2016-03-11 11-51-26 '23'", 0, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(04, "CC", "2016-03-11 12-01-04.log", "2016-03-11 12-01-04 '23'", 0, ""), stringsAsFactors = FALSE)
+#logfiles <- rbind(logfiles, c(05, "CC", "2016-03-11 12-09-31.log", "2016-03-11 12-09-31 '23' grAkku", 0, ""), stringsAsFactors = FALSE)
+##logfiles <- rbind(logfiles, c(06, "CC", "2016-03-11 15-24-14.log", "2016-03-11 15-24-14 '23' grGeschw", 0, ""), stringsAsFactors = FALSE)
+##logfiles <- rbind(logfiles, c(07, "CC", "2016-03-11 15-32-57.log", "2016-03-11 15-32-57 '23' klGeschw", 0, ""), stringsAsFactors = FALSE)
+##logfiles <- rbind(logfiles, c(08, "CC", "2016-03-11 15-46-32.log", "2016-03-11 15-46-32 '23' grGewicht", 0, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(09, "CC", "2016-04-30 17-45-40.log", "2016-04-30 17-45-40 'Steig'", 0, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(10, "CC", "2016-04-30 18-03-59.log", "2016-04-30 18-03-59 'Steig'", 0, ""), stringsAsFactors = FALSE)
+##logfiles <- rbind(logfiles, c(11, "CC", "2016-05-01 14-12-24.log", "2016-05-01 14-12-24 'Steig' Wind", 0, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(12, "CC", "2016-10-23 13-44-35.log", "2016-10-23 13-44-35 'Lw-Quadrat'", 0, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(13, "CC", "2016-10-23 13-57-28.log", "2016-10-23 13-57-28 'Lw-Benchmark'", 0, ""), stringsAsFactors = FALSE)
 
 # SoloCopter
-logfiles <- rbind(logfiles, c(14, "2016-10-23 14-12-01.log", "2016-10-23 14-12-01 Solo 'Lw-Quadrat'", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c(15, "2016-10-23 14-32-45.log", "2016-10-23 14-32-45 Solo 'Lw-Benchmark' Akku a", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c(16, "2016-10-23 14-41-58.log", "2016-10-23 14-41-58 Solo 'Lw-Benchmark' Akku b(Flug1)", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c(17, "2016-10-23 14-49-50.log", "2016-10-23 14-49-50 Solo 'Lw-Benchmark' Akku b(Flug2)", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(14, "Solo", "2016-10-23 14-12-01.log", "2016-10-23 14-12-01 'Lw-Quadrat'", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(15, "Solo", "2016-10-23 14-32-45.log", "2016-10-23 14-32-45 'Lw-Benchmark' Akku a", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(16, "Solo", "2016-10-23 14-41-58.log", "2016-10-23 14-41-58 'Lw-Benchmark' Akku b(Flug1)", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(17, "Solo", "2016-10-23 14-49-50.log", "2016-10-23 14-49-50 'Lw-Benchmark' Akku b(Flug2)", 4, ""), stringsAsFactors = FALSE)
 
-logfiles <- rbind(logfiles, c(18, "2016-10-27 17-19-01.log", "2016-10-27 17-19-01 Solo 'Lw-Quadrat' 3/4 Akku", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c(19, "2016-10-27 17-25-25.log", "2016-10-27 17-25-25 Solo 'Lw-Quadrat' voller Akku", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c(20, "2016-10-27 17-29-25.log", "2016-10-27 17-29-25 Solo 'Lw-Quadrat' 80%", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c(21, "2016-10-27 17-33-10.log", "2016-10-27 17-33-10 Solo 'Lw-Benchmark' 67%", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c(22, "2016-10-27 17-40-31.log", "2016-10-27 17-40-31 Solo 'Lw-Benchmark2' voller Akku", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c(23, "2016-10-27 17-48-39.log", "2016-10-27 17-48-39 Solo 'Lw-Benchmark' bei 57%", 4, ""), stringsAsFactors = FALSE)
-logfiles <- rbind(logfiles, c(24, "2016-10-27 17-54-43.log", "2016-10-27 17-54-43 Solo 'Lw-Benchmark2' voller Akku", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(18, "Solo", "2016-10-27 17-19-01.log", "2016-10-27 17-19-01 'Lw-Quadrat' 3/4 Akku", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(19, "Solo", "2016-10-27 17-25-25.log", "2016-10-27 17-25-25 'Lw-Quadrat' voller Akku", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(20, "Solo", "2016-10-27 17-29-25.log", "2016-10-27 17-29-25 'Lw-Quadrat' 80%", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(21, "Solo", "2016-10-27 17-33-10.log", "2016-10-27 17-33-10 'Lw-Benchmark' 67%", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(22, "Solo", "2016-10-27 17-40-31.log", "2016-10-27 17-40-31 'Lw-Benchmark2' voller Akku", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(23, "Solo", "2016-10-27 17-48-39.log", "2016-10-27 17-48-39 'Lw-Benchmark' bei 57%", 4, ""), stringsAsFactors = FALSE)
+logfiles <- rbind(logfiles, c(24, "Solo", "2016-10-27 17-54-43.log", "2016-10-27 17-54-43 'Lw-Benchmark2' voller Akku", 4, ""), stringsAsFactors = FALSE)
 
-names(logfiles) <- (c("id", "filename", "description", "class", "weather"))
+names(logfiles) <- (c("id", "model", "filename", "description", "class", "weather"))
 
 # class: https://plot.ly/r/reference/#scatter-marker
 
@@ -77,7 +77,8 @@ referenceVoltage         <- 4 * 3.7
 
 # http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
 graphCol1 <- "steelblue"
-graphCol2 <- "indianred"
+graphCol2 <- "goldenrod"
+graphCol2_dark <- "goldenrod4"
 graphCol3 <- "gray70"
 
 #####################################################################
@@ -145,6 +146,7 @@ if(exists("logfile.hover")) {
   cat("Generate Sections (fixed timestamps) ... ")
   sections.file <- data.frame(
     flight = "Hover 10min",
+    model = "Solo",
     class = 1,
     cmd_name = "LOITER_UNLIM",
     timestamp_start = timestamp.start,
@@ -259,6 +261,7 @@ logdata.all.gps = list()
 for (i in 1:nrow(logfiles)) {
   id = as.integer(logfiles[i, "id"])
   filename = logfiles[i, "filename"]
+  model = logfiles[i, "model"]
   description = logfiles[i, "description"]
   class = as.integer(logfiles[i, "class"])
 
@@ -279,7 +282,7 @@ for (i in 1:nrow(logfiles)) {
   remove(raw.data)
 
   cat("GenerateSections ... ")
-  sections.file <- GenerateSections(logdata.mode.cmd, class, description)
+  sections.file <- GenerateSections(logdata.mode.cmd, class, model, description)
   cat("AddMovement ... ")
   sections.file <- AddMovementData(sections.file, logdata.mode.cmd, logdata.gps)
   cat("AddConsumption ... ")
@@ -414,17 +417,19 @@ dev.off()
 #####################################################################
 # Speed from Angle relation plot ####################################
 
-tikz(paste(tikzLocation, "4_angle_speed_relation_plot_R.tex", sep = ""), width=6, height=2.5)
+tikz(paste(tikzLocation, "4_angle_speed_relation_plot_R.tex", sep = ""), width=6, height=3)
 
-ggplot(sections.all.filtered, aes(x=cmd_angle, y=gps_speed, group=cmd_angle)) +
-  geom_jitter(width=10,
-              color=alpha(graphCol3, 0.6)) +
-  geom_boxplot(width=12,
-               color=graphCol1,
-               fill=alpha("white", 0.4),
+ggplot(sections.all.filtered, aes(x=cmd_angle, y=gps_speed, group=interaction(cmd_angle, model, cmd_name), color=interaction(model,cmd_name))) +
+  geom_jitter(width=8, alpha=0.2) +
+  geom_boxplot(width=14,
+               fill=alpha("white", 0.2),
                outlier.alpha = 0) +
-  #coord_cartesian(xlim = c(175,215),ylim= c(150,350)) +
   scale_x_continuous(breaks = seq(-90, 90, 30)) +
+  scale_color_manual(name="Testbed UAV",
+                     values=c(graphCol2_dark, graphCol2, graphCol1),
+                     labels=c("Custom Build (Setting 2)", "Custom Build (Setting 1)", "3DR Solo")) + # 2-Loiter, 1-Waypoint
+  guides(color=guide_legend(reverse=TRUE)) +
+  theme(legend.position = c(0.85, 0.8)) +
   labs(x="Angle [°]", y="Speed [m/s]")
 
 dev.off()
