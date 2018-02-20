@@ -232,8 +232,8 @@ AddConsumptionData <- function(sections, curr) {
   for (i in 1:nrow(sections)) {
     if(is.na(sections[i,"cmd_id_prev"]) | sections[i,"cmd_name"] == "RETURN_TO_LAUNCH") {
       sections[i, "n_rows"] <- NA
-      sections[i, "mean"] <- NA
-      sections[i, "stddeviation"] <- NA
+      sections[i, "power_mean"] <- NA
+      sections[i, "power_stddeviation"] <- NA
       sections[i, "current"] <- NA
       sections[i, "current_stddev"] <- NA
       sections[i, "energy"] <- NA
@@ -254,8 +254,8 @@ AddConsumptionData <- function(sections, curr) {
     temp.curr <- curr[(curr$TimeRelS >= delayed.start & curr$TimeRelS <= delayed.end), ]
     sections[i, "n_rows"] <- nrow(temp.curr)
     if(nrow(temp.curr) <= minSamplesForMean) {
-      sections[i, "mean"] <- NA
-      sections[i, "stddeviation"] <- NA
+      sections[i, "power_mean"] <- NA
+      sections[i, "power_stddeviation"] <- NA
       sections[i, "current"] <- NA
       sections[i, "current_stddev"] <- NA
       sections[i, "energy"] <- NA
@@ -278,13 +278,13 @@ AddConsumptionData <- function(sections, curr) {
     }
     
     # resulting data
-    sections[i, "mean"] <- wtd.mean(powers, weights=times, na.rm=FALSE)                  # mean power over flight time, in [W]
-    sections[i, "stddeviation"] <- sqrt(wtd.var(powers, weights=times, na.rm=FALSE))     # in [W]
-    sections[i, "current"] <- wtd.mean(currents, weights=times, na.rm=FALSE)             # mean current, in [A]
-    sections[i, "current_stddev"] <- sqrt(wtd.var(currents, weights=times, na.rm=FALSE)) # current stddev, in [A]
-    sections[i, "energy"] <- energy                                                      # difference CurrTot before and after from full sample data, in [mAh]
-    sections[i, "energy_time"] <- energy.time                                            # full sample data time, in [s]
-    sections[i, "energy_current"] <- energy / energy.time * 60 * 60 / 1000               # full sample data energy by time, in [A]
+    sections[i, "power_mean"] <- wtd.mean(powers, weights=times, na.rm=FALSE)              # mean power over flight time, in [W]
+    sections[i, "power_stddeviation"] <- sqrt(wtd.var(powers, weights=times, na.rm=FALSE)) # in [W]
+    sections[i, "current"] <- wtd.mean(currents, weights=times, na.rm=FALSE)               # mean current, in [A]
+    sections[i, "current_stddev"] <- sqrt(wtd.var(currents, weights=times, na.rm=FALSE))   # current stddev, in [A]
+    sections[i, "energy"] <- energy                                                        # difference CurrTot before and after from full sample data, in [mAh]
+    sections[i, "energy_time"] <- energy.time                                              # full sample data time, in [s]
+    sections[i, "energy_current"] <- energy / energy.time * 60 * 60 / 1000                 # full sample data energy by time, in [A]
     
     #print(wtd.quantile(powers, weights=times, probs=0.75, na.rm=FALSE))
     
@@ -305,10 +305,10 @@ GetCombinedAngleData <- function(sections) {
     angle.sections <- sections[sections$cmd_angle == angles[i], ]
     count <- nrow(angle.sections)
     speed.mean <- sum(angle.sections$gps_speed) / count
-    mean.mean <- sum(angle.sections$mean) / count
+    mean.mean <- sum(angle.sections$power_mean) / count
     current.mean <- sum(angle.sections$current) / count
     current.stddev <- sum(angle.sections$current_stddev) / count
-    sum.stddeviation <- sqrt(sum(angle.sections$stddeviation ^2))
+    sum.stddeviation <- sqrt(sum(angle.sections$power_stddeviation ^2))
     combined[i, "cmd_angle"] <- angles[i]            # angle for combination groups
     combined[i, "sect_count"] <- count               # number of sections combined for mean
     combined[i, "speed_mean"] <- speed.mean          # in [m/s]

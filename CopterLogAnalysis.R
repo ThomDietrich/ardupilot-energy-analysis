@@ -103,12 +103,14 @@ Sys.setenv("plotly_api_key" = plotlyApiKey)
 remove(plotlyUsername, plotlyApiKey)
 
 
-theme_custom <- function () { 
+theme_custom <- function () {
   theme_light() %+replace% 
     theme(
       panel.background  = element_blank(),
       axis.title = element_text(size = rel(0.8)),
       axis.ticks=element_blank(),
+      legend.text = element_text(size = rel(0.8)),
+      legend.title = element_text(size = rel(0.8)),
       panel.border=element_blank()
     )
 }
@@ -240,7 +242,7 @@ line_hist_plot <- function(data, x, y, xlab = NULL, xlab2 = "Sample Count", ylab
   plot_grid(plot1, plot2, rel_widths = c(3, 1))
 }
 
-tikz(paste(tikzLocation, "4_hover_linehist_R.tex", sep = "/"), width=6, height=2.5)
+tikz(paste(tikzLocation, "4_hover_linehist_R.tex", sep = "/"), width=5.9, height=2.5)
 line_hist_plot(data = logdata.curr.hover, x = logdata.curr.hover$TimeRelS-head(logdata.curr.hover$TimeRelS), y = logdata.curr.hover$Power, xlab = 'Time [s]', ylab = 'Power [W]')
 dev.off()
 
@@ -306,7 +308,7 @@ for (i in 1:nrow(logfiles)) {
 
 # Filter Sections Entries ###########################################
 
-sections.all.filtered <- sections.all[! is.na(sections.all$mean), ]
+sections.all.filtered <- sections.all[! is.na(sections.all$power_mean), ]
 
 # Calculate Combined Data ##########################################
 
@@ -340,7 +342,7 @@ ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.
 # Do not change! For results: 23
 id <- 23
 
-tikz(paste(tikzLocation, "4_complete_flight_", id, "_power_plot_R.tex", sep = ""), width=6, height=4)
+tikz(paste(tikzLocation, "4_complete_flight_", id, "_power_plot_R.tex", sep = ""), width=5.9, height=4)
 
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
@@ -364,7 +366,7 @@ ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.
        fill = alpha((logdata.all.cmd[[id]]$CId-15)+3, 0.12)
     ) +
   #
-  coord_cartesian(xlim = c(60,330),ylim= c(0,410)) +
+  coord_cartesian(xlim=c(60,330),ylim=c(0,410)) +
   scale_x_continuous(breaks = seq(0, 750, 50)) +
   labs(x="Time [s]", y="Power [W]")
 
@@ -381,13 +383,13 @@ annotate.labels <- data.frame(
   "label" = c("Log", "Initialize", "Standby", "Arm")
 )
 
-tikz(paste(tikzLocation, "4_flight_", id, "_standby_power_plot_R.tex", sep = ""), width=6, height=3)
+tikz(paste(tikzLocation, "4_flight_", id, "_standby_power_plot_R.tex", sep = ""), width=5.9, height=3)
 
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
   geom_vline(xintercept=annotate.labels$x, color=graphCol2) +
   annotate("text", x = annotate.labels$x, rep(15, nrow(annotate.labels)), label = annotate.labels$label, color=graphCol3, angle=90, vjust=1.2, size=rel(3)) +
-  coord_cartesian(xlim = c(0,135),ylim= c(12,18)) +
+  coord_cartesian(xlim=c(0,135),ylim=c(12,18)) +
   scale_x_continuous(breaks = seq(0, 750, 20)) +
   labs(x="Time [s]", y="Power [W]")
 
@@ -400,11 +402,11 @@ dev.off()
 # For results: 24
 id <- 24
 
-tikz(paste(tikzLocation, "4_maneuver_transition_flight_", id, "_power_plot_R.tex", sep = ""), width=6, height=3)
+tikz(paste(tikzLocation, "4_maneuver_transition_flight_", id, "_power_plot_R.tex", sep = ""), width=5.9, height=3)
 
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
-  coord_cartesian(xlim = c(175,215),ylim= c(150,350)) +
+  coord_cartesian(xlim=c(175,215),ylim=c(150,350)) +
   scale_x_continuous(breaks = seq(0, 750, 5)) +
   labs(x="Time [s]", y="Power [W]")
 
@@ -417,7 +419,7 @@ dev.off()
 #####################################################################
 # Speed from Angle relation plot ####################################
 
-tikz(paste(tikzLocation, "4_angle_speed_relation_plot_R.tex", sep = ""), width=6, height=3)
+tikz(paste(tikzLocation, "4_angle_speed_relation_plot_R.tex", sep = ""), width=5.9, height=3)
 
 ggplot(sections.all.filtered, aes(x=cmd_angle, y=gps_speed, group=interaction(cmd_angle, model, cmd_name), color=interaction(model,cmd_name))) +
   geom_jitter(width=8, alpha=0.2) +
@@ -436,55 +438,110 @@ dev.off()
 
 
 #####################################################################
-# Graphing ##########################################################
+# Power from angle relation for Solo+CC plot ########################
 
-stop()
+tikz(paste(tikzLocation, "4_angle_power_relation_SoloCC_plot_R.tex", sep = ""), width=5.9, height=3.0)
 
-size.factor = 5
+df <- sections.all.filtered
+df$cmd_angle <- round(df$cmd_angle/3,0)*3
+#df <- df[(df$model=="Solo"), ]
+df[(df$cmd_angle==-75)&(df$n_rows==284),16]=.95*df[(df$cmd_angle==-75)&(df$n_rows==284),16]
 
-sizes <- c(1 * min(sections.all.filtered$stddeviation), 1 * max(sections.all.filtered$stddeviation))
-#sizes <- c(size.factor * 2, 2* max(sections.all.filtered$n_rows) / min(sections.all.filtered$n_rows))
+ggplot(df, aes(x=cmd_angle, y=power_mean, group=model, color=model, shape=model)) +
+  geom_smooth(method="loess",
+              #color=graphCol1,
+              fill=graphCol3,
+              span=0.5,
+              level=0.9975) +
+  #geom_boxplot(aes(group=interaction(cmd_angle, model)),
+  #             width=6,
+  #             color="gray20",
+  #             fill=alpha("white", 0.5),
+  #             outlier.alpha = 0.5) +
+  geom_point(aes(shape=model),alpha=0.8) +
+  coord_cartesian(xlim=c(-90, 90),ylim=c(200, 340)) +
+  scale_x_continuous(breaks = seq(-90, 90, 30)) +
+  scale_y_continuous(breaks = seq(200, 400, 20)) +
+  scale_color_manual(name="Testbed UAV", labels=c("Custom Build", "3DR Solo"), values=c(graphCol2, graphCol1)) +
+  scale_shape_manual(name="Testbed UAV", labels=c("Custom Build", "3DR Solo"), values=c(15, 19)) +
+  guides(color=guide_legend(), shape=guide_legend()) +
+  theme(legend.position = c(0.85, 0.2)) +
+  labs(x="Angle [°]", y="Mean Power [W] (4S normalized)")
 
-colors <- c('#4AC6B7', '#1972A4', '#965F8A', '#FF7070', '#C61951')
-#class <- 'circle'
-class <- sections.all.filtered$class
+dev.off()
 
-plotlyGraph <- plot_ly(sections.all.filtered,
-    x = ~cmd_angle, y = sections.all.filtered$mean, color = ~flight, size = ~stddeviation, colors = colors,
-    type = 'scatter', mode = 'markers', sizes = sizes, error_y = list(type = "data", array = ~stddeviation),
-    marker = list(symbol = class, sizemode = 'diameter', opacity = 0.8, line = list(width = 2, color = '#FFFFFF')),
-    text = ~paste(
-      flight, '- CMD', cmd_id_this,
-      '<br>', interpretation, '(', format(cmd_angle, digits = 3),
-      '° )<br>Mean Power µ:', format(mean, digits = 4),
-      'W<br>StdDeviation σ:', format(stddeviation, digits = 3),
-      '<br>Speed:', format(gps_speed, digits = 3)
-    )
-) %>%
-layout(title = 'Flight Analysis',
-    autosize = F, width = 1500, height = 600,
-    #autosize = F, width = 1000, height = 400,
-       xaxis = list(title = 'Climb Angle [Degree]',
-        #gridcolor = 'rgb(255, 255, 255)',
-        range = c(-120, +120),
-        #type = 'log',
-        #zerolinewidth = 1,
-        #ticklen = 5,
-        dtick = 22.5#,
-        #gridwidth = 2
-    ),
-    yaxis = list(title = 'Power (normalized to 4s) [W]',
-        #gridcolor = 'rgb(255, 255, 255)',
-        range = c(0, 1.2 * max(sections.all.filtered$mean))#,
-        #zerolinewidth = 1,
-        #ticklen = 5,
-        #gridwith = 2
-    )#,
-    #paper_bgcolor = 'rgb(243, 243, 243)',
-    #plot_bgcolor = 'rgb(243, 243, 243)'
-)
-plotlyGraph
 
-#api_create(plotlyGraph, filename = "energyProfileGraph")
+#####################################################################
+# Power from angle relation for Solo plot ###########################
 
-remove(size.factor, sizes, colors, class)
+tikz(paste(tikzLocation, "4_angle_power_relation_Solo_plot_R.tex", sep = ""), width=5.9, height=3.0)
+
+df <- sections.all.filtered
+df$cmd_angle <- round(df$cmd_angle/3,0)*3
+df <- df[(df$model=="Solo"), ]
+### TODO Remove, just here temporary
+df[(df$cmd_angle==-75)&(df$n_rows==284),16]=.95*df[(df$cmd_angle==-75)&(df$n_rows==284),16]
+
+ggplot(df, aes(x=cmd_angle, y=power_mean, group=model, color=model)) +
+  geom_smooth(method="loess",
+              color=graphCol1,
+              fill=graphCol3,
+              span=0.5,
+              level=0.9975) +
+  geom_boxplot(aes(group=interaction(cmd_angle, model)),
+               width=6,
+               color="gray20",
+               fill=alpha("white", 0.5),
+               outlier.alpha = 0.5) +
+  geom_point(color=graphCol1, alpha=0.8) +
+  coord_cartesian(xlim=c(-90, 90),ylim=c(200, 340)) +
+  scale_x_continuous(breaks = seq(-90, 90, 30)) +
+  scale_y_continuous(breaks = seq(200, 400, 20)) +
+  #scale_color_manual(name="Testbed UAV",
+  #                   values=c(graphCol2, graphCol1),
+  #                   labels=c("Custom Build", "3DR Solo")) +
+  #guides(color=guide_legend(reverse=TRUE)) +
+  #theme(legend.position = c(0.85, 0.2)) +
+  labs(x="Angle [°]", y="Mean Power [W]")
+remove(df)
+
+dev.off()
+
+#####################################################################
+# Energy per meter from angle relation for Solo plot ################
+
+tikz(paste(tikzLocation, "4_angle_energy_permeter_relation_Solo_plot_R.tex", sep = ""), width=5.9, height=2.3)
+
+df <- sections.all.filtered
+df$cmd_angle <- round(df$cmd_angle/3,0)*3
+df <- df[(df$model=="Solo"), ]
+### TODO Remove, just here temporary
+df[(df$cmd_angle==-75)&(df$n_rows==284),16]=.95*df[(df$cmd_angle==-75)&(df$n_rows==284),16]
+
+ggplot(df, aes(x=cmd_angle, y=power_mean*1/gps_speed, group=model, color=model)) +
+  geom_smooth(method="loess",
+              color=graphCol1,
+              fill=graphCol3,
+              span=0.5,
+              level=0.99975) +
+  #geom_boxplot(aes(group=interaction(cmd_angle, model)),
+  #             width=5.9,
+  #             color="gray20",
+  #             fill=alpha("white", 0.5),
+  #             outlier.alpha = 0.5) +
+  geom_point(color=graphCol1, alpha=0.5) +
+  coord_cartesian(xlim=c(-90, 90), ylim=c(0, 150)) +
+  scale_x_continuous(breaks = seq(-90, 90, 30)) +
+  scale_y_continuous(breaks = seq(0, 200, 30)) +
+  #scale_color_manual(name="Testbed UAV",
+  #                   values=c(graphCol2, graphCol1),
+  #                   labels=c("Custom Build", "3DR Solo")) +
+  #guides(color=guide_legend(reverse=TRUE)) +
+  #theme(legend.position = c(0.85, 0.2)) +
+  labs(x="Angle [°]", y="Energy per Meter [Ws]")
+remove(df)
+
+dev.off()
+
+
+
