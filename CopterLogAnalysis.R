@@ -246,6 +246,26 @@ tikz(paste(tikzLocation, "4_hover_linehist_R.tex", sep = "/"), width=5.9, height
 line_hist_plot(data = logdata.curr.hover, x = logdata.curr.hover$TimeRelS-head(logdata.curr.hover$TimeRelS), y = logdata.curr.hover$Power, xlab = 'Time [s]', ylab = 'Power [W]')
 dev.off()
 
+
+#####################################################################
+# Quantile-Quantile plot to prove normal distribution ###############
+
+tikz(paste(tikzLocation, "4_hover_quantile-quantile_plot_R.tex", sep = ""), width=2.5, height=2.5)
+
+y     <- quantile(logdata.curr.hover$Power, c(0.25, 0.75)) # Find the 1st and 3rd quartiles
+x     <- qnorm(c(0.25, 0.75))         # Find the matching normal values on the x-axis
+slope <- diff(y) / diff(x)             # Compute the line slope
+int   <- y[1] - slope * x[1]           # Compute the line intercept
+
+ggplot() +
+  geom_qq(aes(sample = logdata.curr.hover$Power), color=graphCol1) +
+  #geom_abline(intercept=263, slope=5.5, color=graphCol3, size=1.5, alpha=0.8) +
+  geom_abline(intercept=int, slope=slope, color=graphCol3, size=1.5, alpha=0.8) +
+  labs(x="Theoretical Quantiles", y="Power Sample Quantiles")
+
+dev.off()
+
+
 #####################################################################
 #    MAIN Analysis   ################################################
 #####################################################################
@@ -460,13 +480,13 @@ ggplot(df, aes(x=cmd_angle, y=power_mean, group=model, color=model, shape=model)
   #             outlier.alpha = 0.5) +
   geom_point(aes(shape=model),alpha=0.8) +
   coord_cartesian(xlim=c(-90, 90),ylim=c(200, 340)) +
-  scale_x_continuous(breaks = seq(-90, 90, 30)) +
-  scale_y_continuous(breaks = seq(200, 400, 20)) +
+  scale_x_continuous(breaks=seq(-90, 90, 30)) +
+  scale_y_continuous(breaks=seq(0, 500, 20), sec.axis = sec_axis(trans=~.*3/4, name="Mean Power [W] (Custom Build)", breaks=seq(0, 500, 20))) +
   scale_color_manual(name="Testbed UAV", labels=c("Custom Build", "3DR Solo"), values=c(graphCol2, graphCol1)) +
   scale_shape_manual(name="Testbed UAV", labels=c("Custom Build", "3DR Solo"), values=c(15, 19)) +
   guides(color=guide_legend(), shape=guide_legend()) +
   theme(legend.position = c(0.85, 0.2)) +
-  labs(x="Angle [°]", y="Mean Power [W] (4S normalized)")
+  labs(x="Angle [°]", y="Mean Power [W] (3DR Solo)")
 
 dev.off()
 
@@ -543,5 +563,81 @@ remove(df)
 
 dev.off()
 
+#####################################################################
+# Normal Distribution Example #######################################
+
+dnorm_full <- function(x){
+  .dnorm <- dnorm(x)
+  return(.dnorm)
+}
+
+dnorm_sd <- function(x, nsigma){
+  .dnorm <- dnorm(x)
+  .dnorm[x <= -nsigma | x >= nsigma] <- NA
+  return(.dnorm)
+}
+
+dnorm_quantile <- function(x, probability=0.5, upper=FALSE){
+  # returns the normal distribution up to the z quantile for probability P(Z <= z) = p
+  .dnorm <- dnorm(x)
+  if (upper) {
+    .dnorm[x < qnorm(probability)] <- NA
+  } else {
+    .dnorm[x > qnorm(probability)] <- NA
+  }
+  return(.dnorm)
+}
+
+text_size <- rel(3)
+
+# Design: https://statistics.laerd.com/statistical-guides/normal-distribution-calculations.php
+
+tikz(paste(tikzLocation, "4_normal_distribution_plot_R.tex", sep = ""), width=5.9, height=1.9)
+
+plot_quantiles <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
+  stat_function(fun = dnorm_full, geom = "area", fill = graphCol1, alpha = 0.1) +
+  stat_function(fun = dnorm_sd, args = list(nsigma=3), geom = "area", fill = graphCol1, alpha = 0.3) +
+  stat_function(fun = dnorm_sd, args = list(nsigma=2), geom = "area", fill = graphCol1, alpha = 0.3) +
+  stat_function(fun = dnorm_sd, args = list(nsigma=1), geom = "area", fill = graphCol1, alpha = 0.4) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), color=graphCol3) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = graphCol2_dark) +
+  annotate("text", x = 1.3, y = 0.38, label = "Mean\n15.0 Wh", color=graphCol3, size = rel(3)) +
+  #scale_x_continuous(breaks = c(-10:10)) + 
+  scale_x_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  theme(axis.text.y = element_blank()) +
+  labs(x = "z", y = "Probability Density f(z)")
+
+probability <- 0.5
+
+plot_50 <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
+  stat_function(fun = dnorm_full, geom="area", fill=graphCol2, alpha=0.1) +
+  stat_function(fun = dnorm_quantile, args = list(probability=probability, upper=TRUE), n=300, geom="area", fill=graphCol2, alpha=0.8) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), color=graphCol3) +
+  geom_vline(xintercept = qnorm(probability), linetype = "dashed", colour = graphCol2_dark) +
+  annotate("text", x = qnorm(probability)+1.3, y = 0.38, label = "Assumption\n15.0 Wh", color=graphCol3, size = rel(3)) +
+  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "P(Z > z_p) = 50\\%", color=graphCol3, size = rel(3)) +
+  scale_x_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  theme(axis.text.y = element_blank(), axis.title.y = element_blank()) +
+  labs(x = "z", y = "Probability Density f(z)")
+
+probability <- 0.95
+
+plot_95 <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
+  stat_function(fun = dnorm_full, geom="area", fill=graphCol2, alpha=0.1) +
+  stat_function(fun = dnorm_quantile, args = list(probability=probability, upper=TRUE), n=300, geom="area", fill=graphCol2, alpha=0.8) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), color=graphCol3) +
+  geom_vline(xintercept = qnorm(probability), linetype = "dashed", colour = graphCol2_dark) +
+  annotate("text", x = qnorm(probability)+1, y = 0.38, label = "Assumption\n15.7 Wh", color=graphCol3, size = rel(3)) +
+  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "P(Z > z_p) = 5\\%", color=graphCol3, size = rel(3)) +
+  scale_x_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  theme(axis.text.y = element_blank(), axis.title.y = element_blank()) +
+  labs(x = "z", y = "Probability Density f(z)")
+  
+plot_grid(plot_quantiles, plot_50, plot_95, ncol=3, rel_widths = c(1, 1, 1), labels = c("(a)","(b)","(c)"), label_size = 10)
+
+dev.off()
 
 
