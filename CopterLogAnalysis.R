@@ -84,7 +84,7 @@ graphCol3 <- "gray70"
 #####################################################################
 # Install packages, load libraries ##################################
 
-list.of.packages <- c("plotly", "Hmisc", "geosphere", "ggplot2", "cowplot", "tikzDevice")
+list.of.packages <- c("rlang", "plotly", "Hmisc", "geosphere", "ggplot2", "cowplot", "tikzDevice", "TTR", "forecast")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 sapply(list.of.packages, require, character.only = TRUE)
@@ -132,10 +132,10 @@ if(exists("logfile.hover")) {
   filename <- logfile.hover
   timestamp.start <- 195.776
   timestamp.end <- 723.918
-
+  
   cat("Load File ... ")
   logdata = read.csv(file = filename, sep = ",", header = FALSE, strip.white = TRUE, stringsAsFactors = FALSE)
-
+  
   cat("Parse File ... ")
   raw.data <- ParseLogdata(logdata)
   logdata.curr <- raw.data$curr
@@ -144,7 +144,7 @@ if(exists("logfile.hover")) {
   logdata.mode.cmd <- raw.data$mode.cmd
   logdata.gps <- raw.data$gps
   remove(raw.data)
-
+  
   cat("Generate Sections (fixed timestamps) ... ")
   sections.file <- data.frame(
     flight = "Hover 10min",
@@ -157,13 +157,13 @@ if(exists("logfile.hover")) {
     timestamp_end = timestamp.end,
     stringsAsFactors = FALSE
   )
-
+  
   cat("AddConsumption ... ")
   sections.file <- AddConsumptionData(sections.file, logdata.curr)
   cat("\n")
-
+  
   logdata.curr.hover <- logdata.curr[(logdata.curr$TimeRelS >= timestamp.start & logdata.curr$TimeRelS <= timestamp.end), ]
-
+  
   p <- plot_ly(logdata.curr, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]")
   p <- add_markers(p, x = logdata.mode$TimeRelS, y = 5, text = paste('MODE', logdata.mode$Mode, sep=' '), name = "modes")
   p <- add_markers(p, x = logdata.cmd$TimeRelS, y = logdata.cmd$CId / 5, text = paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
@@ -176,7 +176,7 @@ if(exists("logfile.hover")) {
   p3 <- plot_ly(logdata.curr.hover, x = ~Power, type = "histogram")
   p3
   #api_create(p3, filename = "HoverSteadyHistogram")
-
+  
   # Duration of maneuver
   hover.duration <- timestamp.end - timestamp.start
   
@@ -210,7 +210,7 @@ if(exists("logfile.hover")) {
   # current consumption total 3365-683 = 2682 mAh
   # current consumption total by seconds 2682/528 * (60*60/1000) = 18.29 A
   # power consumption total 47.71570-10.25866 = 37.45704 Wh
-
+  
   remove(filename, timestamp.start, timestamp.end)
   remove(p, p2, p3)
 }
@@ -242,7 +242,7 @@ line_hist_plot <- function(data, x, y, xlab = NULL, xlab2 = "Sample Count", ylab
   plot_grid(plot1, plot2, rel_widths = c(3, 1))
 }
 
-tikz(paste(tikzLocation, "4_hover_linehist_R.tex", sep = "/"), width=5.9, height=2.5)
+tikz(paste(tikzLocation, "4_hover_linehist_R.tex", sep = "/"), timestamp = FALSE, width=5.9, height=2.5)
 line_hist_plot(data = logdata.curr.hover, x = logdata.curr.hover$TimeRelS-head(logdata.curr.hover$TimeRelS), y = logdata.curr.hover$Power, xlab = 'Time [s]', ylab = 'Power [W]')
 dev.off()
 
@@ -250,7 +250,7 @@ dev.off()
 #####################################################################
 # Quantile-Quantile plot to prove normal distribution ###############
 
-tikz(paste(tikzLocation, "4_hover_quantile-quantile_plot_R.tex", sep = ""), width=2.5, height=2.5)
+tikz(paste(tikzLocation, "4_hover_quantile-quantile_plot_R.tex", sep = ""), timestamp = FALSE, width=2.5, height=2.5)
 
 y     <- quantile(logdata.curr.hover$Power, c(0.25, 0.75)) # Find the 1st and 3rd quartiles
 x     <- qnorm(c(0.25, 0.75))         # Find the matching normal values on the x-axis
@@ -286,14 +286,14 @@ for (i in 1:nrow(logfiles)) {
   model = logfiles[i, "model"]
   description = logfiles[i, "description"]
   class = as.integer(logfiles[i, "class"])
-
+  
   if(i == 1) cat("\n\n")
-
+  
   cat(paste("Analyzing", filename, "- "))
-
+  
   cat("Load File ... ")
   logdata = read.csv(file = filename, sep = ",", header = FALSE, strip.white = TRUE, stringsAsFactors = FALSE)
-
+  
   cat("Parse File ... ")
   raw.data <- ParseLogdata(logdata)
   logdata.curr <- raw.data$curr
@@ -302,7 +302,7 @@ for (i in 1:nrow(logfiles)) {
   logdata.mode.cmd <- raw.data$mode.cmd
   logdata.gps <- raw.data$gps
   remove(raw.data)
-
+  
   cat("GenerateSections ... ")
   sections.file <- GenerateSections(logdata.mode.cmd, class, model, description)
   cat("AddMovement ... ")
@@ -311,7 +311,7 @@ for (i in 1:nrow(logfiles)) {
   sections.file <- AddConsumptionData(sections.file, logdata.curr)
   sections.all <- rbind(sections.all, sections.file)
   cat("\n")
-
+  
   # logdata backup
   logdata.all.filename[[id]] = filename
   logdata.all.curr[[id]]     = logdata.curr
@@ -362,7 +362,7 @@ ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.
 # Do not change! For results: 23
 id <- 23
 
-tikz(paste(tikzLocation, "4_complete_flight_", id, "_power_plot_R.tex", sep = ""), width=5.9, height=4)
+tikz(paste(tikzLocation, "4_complete_flight_", id, "_power_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=4)
 
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
@@ -377,14 +377,14 @@ ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.
   #          angle=90,
   #          vjust = 1.6,
   #          size=rel(3)) +
-  #
-  geom_bar(data=logdata.all.cmd[[id]],
-       aes(x=logdata.all.cmd[[id]]$TimeRelS,
-         y=rep(500, nrow(logdata.all.cmd[[id]]))),
-       stat = "identity",
-       width = 4,
-       fill = alpha((logdata.all.cmd[[id]]$CId-15)+3, 0.12)
-    ) +
+#
+geom_bar(data=logdata.all.cmd[[id]],
+         aes(x=logdata.all.cmd[[id]]$TimeRelS,
+             y=rep(500, nrow(logdata.all.cmd[[id]]))),
+         stat = "identity",
+         width = 4,
+         fill = alpha((logdata.all.cmd[[id]]$CId-15)+3, 0.12)
+) +
   #
   coord_cartesian(xlim=c(60,330),ylim=c(0,410)) +
   scale_x_continuous(breaks = seq(0, 750, 50)) +
@@ -403,7 +403,7 @@ annotate.labels <- data.frame(
   "label" = c("Log", "Initialize", "Standby", "Arm")
 )
 
-tikz(paste(tikzLocation, "4_flight_", id, "_standby_power_plot_R.tex", sep = ""), width=5.9, height=3)
+tikz(paste(tikzLocation, "4_flight_", id, "_standby_power_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=3)
 
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
@@ -422,7 +422,7 @@ dev.off()
 # For results: 24
 id <- 24
 
-tikz(paste(tikzLocation, "4_maneuver_transition_flight_", id, "_power_plot_R.tex", sep = ""), width=5.9, height=3)
+tikz(paste(tikzLocation, "4_maneuver_transition_flight_", id, "_power_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=3)
 
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
@@ -439,7 +439,7 @@ dev.off()
 #####################################################################
 # Speed from Angle relation plot ####################################
 
-tikz(paste(tikzLocation, "4_angle_speed_relation_plot_R.tex", sep = ""), width=5.9, height=3)
+tikz(paste(tikzLocation, "4_angle_speed_relation_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=3)
 
 ggplot(sections.all.filtered, aes(x=cmd_angle, y=gps_speed, group=interaction(cmd_angle, model, cmd_name), color=interaction(model,cmd_name))) +
   geom_jitter(width=8, alpha=0.2) +
@@ -460,7 +460,7 @@ dev.off()
 #####################################################################
 # Power from angle relation for Solo+CC plot ########################
 
-tikz(paste(tikzLocation, "4_angle_power_relation_SoloCC_plot_R.tex", sep = ""), width=5.9, height=3.0)
+tikz(paste(tikzLocation, "4_angle_power_relation_SoloCC_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=3.0)
 
 df <- sections.all.filtered
 df$cmd_angle <- round(df$cmd_angle/3,0)*3
@@ -494,7 +494,7 @@ dev.off()
 #####################################################################
 # Power from angle relation for Solo plot ###########################
 
-tikz(paste(tikzLocation, "4_angle_power_relation_Solo_plot_R.tex", sep = ""), width=5.9, height=3.0)
+tikz(paste(tikzLocation, "4_angle_power_relation_Solo_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=3.0)
 
 df <- sections.all.filtered
 df$cmd_angle <- round(df$cmd_angle/3,0)*3
@@ -530,7 +530,7 @@ dev.off()
 #####################################################################
 # Energy per meter from angle relation for Solo plot ################
 
-tikz(paste(tikzLocation, "4_angle_energy_permeter_relation_Solo_plot_R.tex", sep = ""), width=5.9, height=2.3)
+tikz(paste(tikzLocation, "4_angle_energy_permeter_relation_Solo_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=2.3)
 
 df <- sections.all.filtered
 df$cmd_angle <- round(df$cmd_angle/3,0)*3
@@ -592,7 +592,7 @@ text_size <- rel(3)
 
 # Design: https://statistics.laerd.com/statistical-guides/normal-distribution-calculations.php
 
-tikz(paste(tikzLocation, "4_normal_distribution_plot_R.tex", sep = ""), width=5.9, height=1.9)
+tikz(paste(tikzLocation, "4_normal_distribution_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=1.9)
 
 plot_quantiles <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
   stat_function(fun = dnorm_full, geom = "area", fill = graphCol1, alpha = 0.1) +
@@ -601,7 +601,7 @@ plot_quantiles <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
   stat_function(fun = dnorm_sd, args = list(nsigma=1), geom = "area", fill = graphCol1, alpha = 0.4) +
   stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), color=graphCol3) +
   geom_vline(xintercept = 0, linetype = "dashed", colour = graphCol2_dark) +
-  annotate("text", x = 1.3, y = 0.38, label = "Mean\n15.0 Wh", color=graphCol3, size = rel(3)) +
+  annotate("text", x = 1.3, y = 0.38, label = "$z_p = 15.0\\,\\mathrm{Wh} = \\mu$", color=graphCol3, size = rel(2)) +
   #scale_x_continuous(breaks = c(-10:10)) + 
   scale_x_continuous(breaks = NULL) +
   scale_y_continuous(breaks = NULL) +
@@ -615,8 +615,8 @@ plot_50 <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
   stat_function(fun = dnorm_quantile, args = list(probability=probability, upper=TRUE), n=300, geom="area", fill=graphCol2, alpha=0.8) +
   stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), color=graphCol3) +
   geom_vline(xintercept = qnorm(probability), linetype = "dashed", colour = graphCol2_dark) +
-  annotate("text", x = qnorm(probability)+1.3, y = 0.38, label = "Assumption\n15.0 Wh", color=graphCol3, size = rel(3)) +
-  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "P(Z > z_p) = 50\\%", color=graphCol3, size = rel(3)) +
+  annotate("text", x = qnorm(probability)+1.3, y = 0.38, label = "$z_p = 15.0\\,\\mathrm{Wh}$", color=graphCol3, size = rel(2)) +
+  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "$P(Z > z_p) = 0.50$", color=graphCol3, size = rel(2)) +
   scale_x_continuous(breaks = NULL) +
   scale_y_continuous(breaks = NULL) +
   theme(axis.text.y = element_blank(), axis.title.y = element_blank()) +
@@ -629,15 +629,99 @@ plot_95 <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
   stat_function(fun = dnorm_quantile, args = list(probability=probability, upper=TRUE), n=300, geom="area", fill=graphCol2, alpha=0.8) +
   stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), color=graphCol3) +
   geom_vline(xintercept = qnorm(probability), linetype = "dashed", colour = graphCol2_dark) +
-  annotate("text", x = qnorm(probability)+1, y = 0.38, label = "Assumption\n15.7 Wh", color=graphCol3, size = rel(3)) +
-  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "P(Z > z_p) = 5\\%", color=graphCol3, size = rel(3)) +
+  annotate("text", x = qnorm(probability)+1, y = 0.38, label = "$z_p = 15.7\\,\\mathrm{Wh}$", color=graphCol3, size = rel(2)) +
+  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "$P(Z > z_p) = 0.05$", color=graphCol3, size = rel(2)) +
   scale_x_continuous(breaks = NULL) +
   scale_y_continuous(breaks = NULL) +
   theme(axis.text.y = element_blank(), axis.title.y = element_blank()) +
   labs(x = "z", y = "Probability Density f(z)")
-  
+
 plot_grid(plot_quantiles, plot_50, plot_95, ncol=3, rel_widths = c(1, 1, 1), labels = c("(a)","(b)","(c)"), label_size = 10)
 
 dev.off()
 
 
+#####################################################################
+# Decomposition of additive time series #############################
+
+decomposition_plot <- function(data, x, y, xlab = NULL, xlab2 = "Sample Count", ylab = NULL, ...) {
+  
+  ## observed
+  plot1 <- ggplot(data, aes(x, y), ...) +
+    #geom_point(color=graphCol3) +
+    geom_line(color=graphCol1) +
+    geom_hline(aes(yintercept=mean(y, na.rm=T)), color=graphCol3, linetype="dashed", size=1) +
+    scale_x_continuous(breaks = seq(min(x), max(x), 50)) +
+    labs(x=xlab, y="Observed [W]") +
+    theme(axis.text.x = element_blank(), axis.title.x = element_blank()) +
+    ylim(250, 280)
+  
+  ## trend
+  y_sma <- SMA(y, n=42)
+  plot2 <- ggplot(data, aes(x, y_sma), ...) +
+    #geom_point(color=graphCol3) +
+    geom_line(color=graphCol1) +
+    geom_hline(aes(yintercept=mean(y, na.rm=T)), color=graphCol3, linetype="dashed", size=1) +
+    scale_x_continuous(breaks = seq(min(x), max(x), 50)) +
+    labs(x="", y="Trend [W]") +
+    theme(axis.text.x = element_blank(), axis.title.x = element_blank()) +
+    ylim(250, 280)
+  
+  ## random
+  plot3 <- ggplot(data, aes(x, y-y_sma), ...) +
+    #geom_point(color=graphCol3) +
+    geom_line(color=graphCol1) +
+    geom_hline(aes(yintercept=mean(y-y_sma, na.rm=T)), color=graphCol3, linetype="dashed", size=1) +
+    scale_x_continuous(breaks = seq(min(x), max(x), 50)) +
+    labs(x="", y="Random [W]") +
+    #theme(axis.text.x = element_blank(), axis.title.x = element_blank()) +
+    ylim(-20, +20)
+  
+  ## arrange both
+  plot_grid(plot1, plot2, plot3, ncol = 1, rel_heights = c(2, 1, 1.2))
+}
+
+tikz(paste(tikzLocation, "4_hover_arima_decomposition_R.tex", sep = "/"), timestamp = FALSE, width=5.9, height=3.5)
+decomposition_plot(data = logdata.curr.hover, x = logdata.curr.hover$TimeRelS-head(logdata.curr.hover$TimeRelS), y = logdata.curr.hover$Power, xlab = 'Time [s]', ylab = 'Power [W]')
+dev.off()
+
+#####################################################################
+# ACF ###############################################################
+
+tikz(paste(tikzLocation, "4_hover_arima_acf_pacf_R.tex", sep = "/"), timestamp = FALSE, width=5.9, height=2.9)
+
+# Quick check
+auto.arima(logdata.curr.hover$Power)
+
+conf_level <- 0.95
+ciline <- qnorm((1 - conf_level)/2)/sqrt(length(logdata.curr.hover$Power))
+bacf <- acf(logdata.curr.hover$Power, plot = FALSE, lag.max = 140)
+bacfdf <- with(bacf, data.frame(lag, acf))
+
+acf_plot <- ggplot(data = bacfdf, aes(x=lag, y = acf)) +
+  geom_hline(aes(yintercept = 0)) +
+  geom_segment(mapping = aes(xend = lag, yend = 0), color = graphCol1) +
+  geom_hline(aes(yintercept = ciline), linetype = 2, color = graphCol3) +
+  geom_hline(aes(yintercept = -ciline), linetype = 2, color = graphCol3) +
+  scale_x_continuous(breaks = seq(0, 150, 25)) +
+  theme(axis.text.x = element_blank(), axis.title.x = element_blank()) +
+  coord_cartesian(xlim=c(0, 140)) +
+  labs(x="", y="ACF")
+
+conf_level <- 0.95
+ciline <- qnorm((1 - conf_level)/2)/sqrt(length(logdata.curr.hover$Power))
+bpacf <- pacf(logdata.curr.hover$Power, plot = FALSE, lag.max = 140)
+bpacfdf <- with(bpacf, data.frame(lag, acf))
+
+pacf_plot <- ggplot(data = bpacfdf, aes(x=lag, y = acf)) +
+  geom_hline(aes(yintercept = 0)) +
+  geom_segment(mapping = aes(xend = lag, yend = 0), color = graphCol1) +
+  geom_hline(aes(yintercept = ciline), linetype = 2, color = graphCol3) +
+  geom_hline(aes(yintercept = -ciline), linetype = 2, color = graphCol3) +
+  scale_x_continuous(breaks = seq(0, 150, 25)) +
+  coord_cartesian(xlim=c(0, 140)) +
+  labs(x="Lag", y="Partial ACF")
+
+plot_grid(acf_plot, pacf_plot, ncol = 1, rel_heights = c(1, 0.9))
+
+dev.off()
