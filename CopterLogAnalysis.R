@@ -76,15 +76,21 @@ batteryVoltageSoloCopter <- 4 * 3.7 # 14.8
 referenceVoltage         <- 4 * 3.7
 
 # http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
-graphCol1 <- "steelblue"
-graphCol2 <- "goldenrod"
+#graphCol1 <- "steelblue"
+#graphCol2 <- "goldenrod"
+#graphCol2_dark <- "goldenrod4"
+#graphCol3 <- "gray70"
+
+#graphCol1 <- "#353594"
+graphCol1 <- "#4682B4" #steelblue
+graphCol2 <- "#B8850A"
 graphCol2_dark <- "goldenrod4"
-graphCol3 <- "gray70"
+graphCol3 <- "#B3B3B3"
 
 #####################################################################
 # Install packages, load libraries ##################################
 
-list.of.packages <- c("rlang", "plotly", "Hmisc", "geosphere", "ggplot2", "cowplot", "tikzDevice", "TTR", "forecast")
+list.of.packages <- c("Hmisc", "geosphere", "ggplot2", "cowplot", "tikzDevice", "TTR", "xts", "forecast")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 sapply(list.of.packages, require, character.only = TRUE)
@@ -96,11 +102,11 @@ remove(list = c("list.of.packages", "new.packages"))
 
 # plotlyUsername <- "user"
 # plotlyApiKey <- "key"
-source("plotlyCredentials.R")
+#source("plotlyCredentials.R")
 
-Sys.setenv("plotly_username" = plotlyUsername)
-Sys.setenv("plotly_api_key" = plotlyApiKey)
-remove(plotlyUsername, plotlyApiKey)
+#Sys.setenv("plotly_username" = plotlyUsername)
+#Sys.setenv("plotly_api_key" = plotlyApiKey)
+#remove(plotlyUsername, plotlyApiKey)
 
 
 theme_custom <- function () {
@@ -164,17 +170,17 @@ if(exists("logfile.hover")) {
   
   logdata.curr.hover <- logdata.curr[(logdata.curr$TimeRelS >= timestamp.start & logdata.curr$TimeRelS <= timestamp.end), ]
   
-  p <- plot_ly(logdata.curr, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]")
-  p <- add_markers(p, x = logdata.mode$TimeRelS, y = 5, text = paste('MODE', logdata.mode$Mode, sep=' '), name = "modes")
-  p <- add_markers(p, x = logdata.cmd$TimeRelS, y = logdata.cmd$CId / 5, text = paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
-  p <- add_trace(p, type="bar", x = logdata.cmd$TimeRelS, y = 25, opacity = 0.1, text=paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
-  p
+  #p <- plot_ly(logdata.curr, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]")
+  #p <- add_markers(p, x = logdata.mode$TimeRelS, y = 5, text = paste('MODE', logdata.mode$Mode, sep=' '), name = "modes")
+  #p <- add_markers(p, x = logdata.cmd$TimeRelS, y = logdata.cmd$CId / 5, text = paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
+  #p <- add_trace(p, type="bar", x = logdata.cmd$TimeRelS, y = 25, opacity = 0.1, text=paste('CMD', logdata.cmd$CNum, "-", logdata.cmd$CName, sep=' '), name = "commands")
+  #p
   #api_create(p, filename = "Hover")
-  p2 <- plot_ly(logdata.curr.hover, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]")
-  p2
+  #p2 <- plot_ly(logdata.curr.hover, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]")
+  #p2
   #api_create(p2, filename = "HoverSteady")
-  p3 <- plot_ly(logdata.curr.hover, x = ~Power, type = "histogram")
-  p3
+  #p3 <- plot_ly(logdata.curr.hover, x = ~Power, type = "histogram")
+  #p3
   #api_create(p3, filename = "HoverSteadyHistogram")
   
   # Duration of maneuver
@@ -212,7 +218,7 @@ if(exists("logfile.hover")) {
   # power consumption total 47.71570-10.25866 = 37.45704 Wh
   
   remove(filename, timestamp.start, timestamp.end)
-  remove(p, p2, p3)
+  #remove(p, p2, p3)
 }
 
 #####################################################################

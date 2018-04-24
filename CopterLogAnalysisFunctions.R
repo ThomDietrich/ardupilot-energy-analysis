@@ -9,7 +9,7 @@ Deg2rad <- function(deg) {(deg * pi) / (180)}
 
 # convert ArduCopter command ID to human readable type
 CId2type <- function(cid) {
-  # reference: https://pixhawk.ethz.ch/mavlink
+  # reference: https://pixhawk.ethz.ch/mavlink / https://mavlink.io/en/
   cmd.CId.as.String <- as.list(c("WAYPOINT", "LOITER_UNLIM", "LOITER_TIME", "RETURN_TO_LAUNCH", "LAND", "TAKEOFF"))
   names(cmd.CId.as.String) <-  c(        16,             17,            19,                 20,     21,        22)
   if (! exists(cid, where=cmd.CId.as.String)){
