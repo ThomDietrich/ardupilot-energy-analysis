@@ -83,13 +83,18 @@ referenceVoltage         <- 4 * 3.7
 
 #graphCol1 <- "#353594"
 graphCol1 <- "#4682B4" #steelblue
-graphCol2 <- "#B8850A"
+graphCol2 <- "#B8850A" #mygold
 graphCol2_dark <- "goldenrod4"
-graphCol3 <- "#B3B3B3"
+graphCol3 <- "#B3B3B3" #mygray
+graphCol3_dark <- "#737373"
+graphCol3_darkdark <- "#434343"
+graphCol4 <- "#780116" #myred
 
 #####################################################################
 # Install packages, load libraries ##################################
 
+library(data.table)
+library(xtable)
 list.of.packages <- c("Hmisc", "geosphere", "ggplot2", "cowplot", "tikzDevice", "TTR", "xts", "forecast")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
@@ -153,19 +158,23 @@ if(exists("logfile.hover")) {
   
   cat("Generate Sections (fixed timestamps) ... ")
   sections.file <- data.frame(
+    flight_id = 0,
     flight = "Hover 10min",
+    flightcmd_id = 0,
     model = "Solo",
     class = 1,
     cmd_name = "LOITER_UNLIM",
     timestamp_start = timestamp.start,
     cmd_id_prev = 1,
     cmd_id_this = 2,
+    gps_angle = NA,
     timestamp_end = timestamp.end,
     stringsAsFactors = FALSE
   )
   
   cat("AddConsumption ... ")
-  sections.file <- AddConsumptionData(sections.file, logdata.curr)
+  ret_list <- AddConsumptionData(sections.file, logdata.curr)
+  sections.file <- ret_list$sections
   cat("\n")
   
   logdata.curr.hover <- logdata.curr[(logdata.curr$TimeRelS >= timestamp.start & logdata.curr$TimeRelS <= timestamp.end), ]
@@ -273,10 +282,109 @@ dev.off()
 
 
 #####################################################################
+# CCCV ##############################################################
+
+tikz(paste(tikzLocation, "2_CCCV_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=3.5)
+
+df <- read.table(header = TRUE, text = 'df.x charge battery.volt current
+     0    0 3.71 4
+   300  310 3.82 4
+   600  620 3.93 4
+   900  930 4.04 4
+  1200 1285 4.15 4
+  1400 1440 4.2  3.9
+  1600 1595 4.2  2.4
+  1800 1710 4.2  1.3
+  2000 1730 4.2  0.5
+  2280 1745 4.2  0')
+
+df$df.x <- df$df.x / 60 * 2.5
+df$charge <- df$charge * 100 / 1745 # / 100 / 10*4 + 3.6
+df$battery.volt <- df$battery.volt
+df$current <- df$current / 4 / 2 * 0.8 + 3.6
+scaleFUN <- function(x) sprintf("%.1f", x)
+
+plot1 <- ggplot(df, aes(df.x, battery.volt)) +
+  #geom_point() +
+  #geom_point(aes(df$df.x, df$current)) +
+  geom_smooth(se = FALSE, span = 0.5, color=graphCol2) +
+  geom_smooth(aes(df$df.x, df$current), se = FALSE, span = 0.4, color=graphCol2_dark) +
+  #geom_smooth(aes(df$df.x, df$charge), se = FALSE, span = 0.6, color=graphCol3) +
+  geom_vline(xintercept=59, linetype="dashed", color=graphCol3_dark, size=1) +
+  annotate("text", x = 80, y = 3.85, label = "Charging current", color=graphCol3_dark, size=rel(3)) +
+  annotate("text", x = 20, y = 3.75, label = "Cell voltage", color=graphCol3_dark, size = rel(3)) +
+  annotate("text", x = 59-4, y = 3.65, label = "CC", color=graphCol3_dark, size=rel(3)) +
+  annotate("text", x = 59+4, y = 3.65, label = "CV", color=graphCol3_dark, size=rel(3)) +
+  coord_cartesian(xlim=c(0, 90), ylim=c(3.575, 4.3)) +
+  scale_x_continuous(breaks = seq(0, 90, 20)) +
+  scale_y_continuous(breaks = seq(0, 6, 0.2),
+                     sec.axis = sec_axis(trans=~.*4*2.5-3.6*4*2.5, name="Charging current [A]", breaks=seq(0, 5, 1), labels=scaleFUN)
+  ) +
+  theme(axis.title.x=element_blank()) +
+  labs(x="Charging time [s]", y="Cell voltage [V]")
+
+plot2 <- ggplot(df, aes(df.x, df$charge)) +
+  #geom_point() +
+  #geom_point(aes(df$df.x, df$current)) +
+  geom_smooth(aes(df$df.x, df$charge), se = FALSE, span = 0.6, color=graphCol1) +
+  geom_vline(xintercept=59, linetype="dashed", color=graphCol3_dark, size=1) +
+  #annotate("text", x = 30-15/2, y = 4.05, label = "Battery cell voltage", color=graphCol3_dark, size = rel(3)) +
+  annotate("text", x = 80, y = 75+25*1/4, label = "Charging level", color=graphCol3_dark, size = rel(3)) +
+  annotate("text", x = 59-4, y = 25*1/4, label = "CC", color=graphCol3_dark, size = rel(3)) +
+  annotate("text", x = 59+4, y = 25*1/4, label = "CV", color=graphCol3_dark, size = rel(3)) +
+  coord_cartesian(xlim=c(0, 90), ylim=c(0, 110)) +
+  scale_x_continuous(breaks = seq(0, 90, 20)) +
+  scale_y_continuous(breaks = seq(0, 100, 25),
+                     sec.axis = sec_axis(trans=~.*1, name=" ", breaks=seq(0, 100, 25))
+  ) +
+  labs(x="Charging time [s]", y="Charging level [\\%] of capacity")
+
+plot_grid(plot1, plot2, ncol = 1, align = 'v')
+
+dev.off()
+
+# Discharge #########################################################
+
+tikz(paste(tikzLocation, "2_Discharge_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=1.75)
+
+df <- read.table(header = TRUE, text = 'soc battery.volt
+  100 4.1
+   80 3.9
+   60 3.8
+   40 3.7
+   10 3.61
+    8 3.6
+    7 3.6
+    6 3.59
+    5 3.5
+    4 3.2
+    3 2.2
+    2 1.1
+    0 0
+')
+
+ggplot(df, aes(soc, battery.volt)) +
+  #geom_point() +
+  geom_smooth(se=FALSE, method = "auto", span = 0.42, color=graphCol1) +
+  #geom_smooth(aes(soc, battery.volt+0.08), se=FALSE, method = "auto", span = 0.42, color=graphCol3) +
+  #geom_smooth(aes(soc, battery.volt-0.08), se=FALSE, method = "auto", span = 0.42, color=graphCol3) +
+  geom_vline(xintercept=7, linetype="dashed", color=graphCol3_dark, size=1) +
+  #annotate("text", x = 1420/60*2.5+4, y = 3.65, label = "CV", color=graphCol3_dark, size = rel(3)) +
+  coord_cartesian(xlim=c(0, 100), ylim=c(3, 4.2)) +
+  scale_x_reverse(breaks = seq(0, 100, 20)) +
+  scale_y_continuous(breaks = seq(0, 6, 0.3)) +
+  #theme(axis.title.x=element_blank()) +
+  labs(x="Charging level [\\%] of capacity", y="Cell voltage [V]")
+
+dev.off()
+
+
+#####################################################################
 #    MAIN Analysis   ################################################
 #####################################################################
 
 sections.all <- data.frame()
+sections.all.table <- data.table()
 
 logdata.all.filename = list()
 logdata.all.curr = list()
@@ -310,11 +418,13 @@ for (i in 1:nrow(logfiles)) {
   remove(raw.data)
   
   cat("GenerateSections ... ")
-  sections.file <- GenerateSections(logdata.mode.cmd, class, model, description)
+  sections.file <- GenerateSections(logdata.mode.cmd, id, class, model, description)
   cat("AddMovement ... ")
   sections.file <- AddMovementData(sections.file, logdata.mode.cmd, logdata.gps)
   cat("AddConsumption ... ")
-  sections.file <- AddConsumptionData(sections.file, logdata.curr)
+  ret_list <- AddConsumptionData(sections.file, logdata.curr)
+  sections.file <- ret_list$sections
+  sections.all.table <- rbind(sections.all.table, ret_list$table)
   sections.all <- rbind(sections.all, sections.file)
   cat("\n")
   
@@ -336,9 +446,50 @@ for (i in 1:nrow(logfiles)) {
 
 sections.all.filtered <- sections.all[! is.na(sections.all$power_mean), ]
 
-# Calculate Combined Data ##########################################
+# Calculate Combined Data ###########################################
 
 combined_angle_data <- GetCombinedAngleData(sections.all.filtered)
+
+# Process ACF lags ##################################################
+# (already filtered)
+
+sections_considered <- sections.all[! is.na(sections.all$power_mean) & sections.all$model == "Solo", ]
+combined <- GetCombinedAngleData(sections_considered)
+
+table_filtered <- sections.all.table[flightcmd_id %in% sections_considered$flightcmd_id]
+
+all_pacf <- list()
+for (angle in combined$cmd_angle) {
+  print(angle)
+  flightcmd_ids <- sections_considered[sections_considered$cmd_angle==angle, ]$flightcmd_id
+  sum <- list(rep(0,30))
+  #print(length(flightcmd_ids))
+  for (id_x in flightcmd_ids) {
+    sum = sum + table_filtered[flightcmd_id==id_x]
+  }
+  mean <- sum / length(flightcmd_ids)
+  mean <- mean[-nrow(mean)] # Remove last element, redundant to first
+  
+  # Retrieve confidence interval value
+  ciborder <- table_filtered[flightcmd_id==flightcmd_ids[1]]$ciborder[1]
+  print(ciborder)
+  
+  #Find highes lag above confidence interval
+  maxindex <- max(which(mean$pacf > 1/2*ciborder))
+  if (is.infinite(maxindex)) maxindex <- nrow(mean)
+  
+  print(maxindex)
+  #Reduce table accordingly
+  mean_pacf_reduced <- c(mean$pacf[1:maxindex], rep(0,length(mean$pacf)-maxindex))
+  
+  all_pacf = rbind(all_pacf, c(angle, mean_pacf_reduced))
+  
+  #print(mean$pacf)
+}
+#print(all_acf)
+print(xtable(all_pacf[,c(1,2:10)], type="latex"))
+print(xtable(all_pacf[,c(1,11:20)], type="latex"))
+
 
 #####################################################################
 # Individual Analysis and Diagrams ##################################
@@ -414,7 +565,7 @@ tikz(paste(tikzLocation, "4_flight_", id, "_standby_power_plot_R.tex", sep = "")
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
   geom_vline(xintercept=annotate.labels$x, color=graphCol2) +
-  annotate("text", x = annotate.labels$x, rep(15, nrow(annotate.labels)), label = annotate.labels$label, color=graphCol3, angle=90, vjust=1.2, size=rel(3)) +
+  annotate("text", x = annotate.labels$x, rep(15, nrow(annotate.labels)), label = annotate.labels$label, color=graphCol3_dark, angle=90, vjust=1.2, size=rel(3)) +
   coord_cartesian(xlim=c(0,135),ylim=c(12,18)) +
   scale_x_continuous(breaks = seq(0, 750, 20)) +
   labs(x="Time [s]", y="Power [W]")
@@ -607,7 +758,7 @@ plot_quantiles <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
   stat_function(fun = dnorm_sd, args = list(nsigma=1), geom = "area", fill = graphCol1, alpha = 0.4) +
   stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), color=graphCol3) +
   geom_vline(xintercept = 0, linetype = "dashed", colour = graphCol2_dark) +
-  annotate("text", x = 1.3, y = 0.38, label = "$z_p = 15.0\\,\\mathrm{Wh} = \\mu$", color=graphCol3, size = rel(2)) +
+  annotate("text", x = 1.3, y = 0.38, label = "$z_p = 15.0\\,\\mathrm{Wh} = \\mu$", color=graphCol3_dark, size = rel(2)) +
   #scale_x_continuous(breaks = c(-10:10)) + 
   scale_x_continuous(breaks = NULL) +
   scale_y_continuous(breaks = NULL) +
@@ -621,8 +772,8 @@ plot_50 <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
   stat_function(fun = dnorm_quantile, args = list(probability=probability, upper=TRUE), n=300, geom="area", fill=graphCol2, alpha=0.8) +
   stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), color=graphCol3) +
   geom_vline(xintercept = qnorm(probability), linetype = "dashed", colour = graphCol2_dark) +
-  annotate("text", x = qnorm(probability)+1.3, y = 0.38, label = "$z_p = 15.0\\,\\mathrm{Wh}$", color=graphCol3, size = rel(2)) +
-  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "$P(Z > z_p) = 0.50$", color=graphCol3, size = rel(2)) +
+  annotate("text", x = qnorm(probability)+1.3, y = 0.38, label = "$z_p = 15.0\\,\\mathrm{Wh}$", color=graphCol3_dark, size = rel(2)) +
+  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "$P(Z > z_p) = 0.50$", color=graphCol3_dark, size = rel(2)) +
   scale_x_continuous(breaks = NULL) +
   scale_y_continuous(breaks = NULL) +
   theme(axis.text.y = element_blank(), axis.title.y = element_blank()) +
@@ -635,8 +786,8 @@ plot_95 <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
   stat_function(fun = dnorm_quantile, args = list(probability=probability, upper=TRUE), n=300, geom="area", fill=graphCol2, alpha=0.8) +
   stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), color=graphCol3) +
   geom_vline(xintercept = qnorm(probability), linetype = "dashed", colour = graphCol2_dark) +
-  annotate("text", x = qnorm(probability)+1, y = 0.38, label = "$z_p = 15.7\\,\\mathrm{Wh}$", color=graphCol3, size = rel(2)) +
-  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "$P(Z > z_p) = 0.05$", color=graphCol3, size = rel(2)) +
+  annotate("text", x = qnorm(probability)+1, y = 0.38, label = "$z_p = 15.7\\,\\mathrm{Wh}$", color=graphCol3_dark, size = rel(2)) +
+  annotate("text", x = qnorm(probability)+1.3, y = 0.28, label = "$P(Z > z_p) = 0.05$", color=graphCol3_dark, size = rel(2)) +
   scale_x_continuous(breaks = NULL) +
   scale_y_continuous(breaks = NULL) +
   theme(axis.text.y = element_blank(), axis.title.y = element_blank()) +
@@ -731,3 +882,8 @@ pacf_plot <- ggplot(data = bpacfdf, aes(x=lag, y = acf)) +
 plot_grid(acf_plot, pacf_plot, ncol = 1, rel_heights = c(1, 0.9))
 
 dev.off()
+
+
+#####################################################################
+#####################################################################
+cat("F I N I S H E D")

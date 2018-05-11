@@ -1,5 +1,7 @@
 #!/usr/bin/Rscript
 
+library(data.table)
+
 #####################################################################
 # Helper functions
 
@@ -135,7 +137,7 @@ ParseLogdata <- function(data) {
 #####################################################################
 # Function: Cut into seperate commands
 
-GenerateSections <- function(mode.cmd, class, model, descr) {
+GenerateSections <- function(mode.cmd, id, class, model, descr) {
   sections <- data.frame()
   in.auto.mode = FALSE
   for (i in 1:nrow(mode.cmd)) {
@@ -153,7 +155,9 @@ GenerateSections <- function(mode.cmd, class, model, descr) {
           temp.section[1, "timestamp_end"] <- mode.cmd[i, "TimeRelS"]
         sections <- rbind(sections, temp.section)
       }
+      temp.section[1, "flight_id"] <- id
       temp.section[1, "flight"] <- descr
+      temp.section[1, "flightcmd_id"] <- id*1000 + as.integer(mode.cmd[i,"CNum"])
       temp.section[1, "model"] <- model
       temp.section[1, "class"] <- class
       temp.section[1, "cmd_name"] <- mode.cmd[i,"CName"]
@@ -229,6 +233,8 @@ AddMovementData <- function(sections, mode.cmd, gps) {
 # Function: Calculte statistical consumption values
 
 AddConsumptionData <- function(sections, curr) {
+  sections_table <- data.table()
+  
   for (i in 1:nrow(sections)) {
     if(is.na(sections[i,"cmd_id_prev"]) | sections[i,"cmd_name"] == "RETURN_TO_LAUNCH") {
       sections[i, "n_rows"] <- NA
@@ -286,12 +292,15 @@ AddConsumptionData <- function(sections, curr) {
     sections[i, "energy_time"] <- energy.time                                              # full sample data time, in [s]
     sections[i, "energy_current"] <- energy / energy.time * 60 * 60 / 1000                 # full sample data energy by time, in [A]
     
-    #print(wtd.quantile(powers, weights=times, probs=0.75, na.rm=FALSE))
-    
-    #plot_ly(temp.curr, x = ~TimeRelS, y = ~Power) %>% add_lines(alpha = 0.7, name = "Power [W]") %>% add_lines(y=sections[i,"mean"], name="mean")
-    #plot_ly(x = powers, type = "histogram")
+    acf <- acf(temp.curr$Power, plot = FALSE, lag.max = 30)
+    pacf <- pacf(temp.curr$Power, plot = FALSE, lag.max = 30)
+    conf_level <- 0.95
+    ciborder <- abs(qnorm((1 - conf_level)/2)/sqrt(length(temp.curr$Power)))
+    # HACK, Get ACF data
+    sections_table <- rbind(sections_table, data.table(flightcmd_id=sections[i, "flightcmd_id"], acf=acf$acf, pacf=pacf$acf, ciborder=ciborder))
   }
-  return(sections)
+  ret <- list("sections"=sections, "table"=sections_table)
+  return(ret)
 }
 
 #####################################################################
