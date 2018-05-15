@@ -265,7 +265,7 @@ dev.off()
 #####################################################################
 # Quantile-Quantile plot to prove normal distribution ###############
 
-tikz(paste(tikzLocation, "4_hover_quantile-quantile_plot_R.tex", sep = ""), timestamp = FALSE, width=2.5, height=2.5)
+tikz(paste(tikzLocation, "4_hover_quantile-quantile_plot_R.tex", sep = ""), timestamp = FALSE, width=4, height=4)
 
 y     <- quantile(logdata.curr.hover$Power, c(0.25, 0.75)) # Find the 1st and 3rd quartiles
 x     <- qnorm(c(0.25, 0.75))         # Find the matching normal values on the x-axis
@@ -340,6 +340,60 @@ plot2 <- ggplot(df, aes(df.x, df$charge)) +
   labs(x="Charging time [s]", y="Charging level [\\%] of capacity")
 
 plot_grid(plot1, plot2, ncol = 1, align = 'v')
+
+dev.off()
+
+# CCCV model ########################################################
+
+tikz(paste(tikzLocation, "2_CCCV_model_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=2.5)
+
+df <- read.table(header = TRUE, text = 'df.x charge battery.volt current
+                 0    0 3.71 4
+                 300  310 3.82 4
+                 600  620 3.93 4
+                 900  930 4.04 4
+                 1200 1285 4.15 4
+                 1400 1440 4.2  3.9
+                 1600 1595 4.2  2.4
+                 1800 1710 4.2  1.3
+                 2000 1730 4.2  0.5
+                 2200 1755 4.2  0
+                 2280 1755 4.2  0')
+
+df$df.x <- df$df.x / 60 * 2.5
+df$charge <- df$charge * 100 / 1760 # / 100 / 10*4 + 3.6
+df$battery.volt <- df$battery.volt
+df$current <- df$current / 4 / 2 * 0.8 + 3.6
+scaleFUN <- function(x) sprintf("%.1f", x)
+
+df2 <- read.table(text = "X Y
+  0 0
+  59 83.2", header = TRUE)
+
+ggplot(df, aes(df.x, df$charge)) +
+  #geom_point() +
+  #geom_point(aes(df$df.x, df$current)) +
+  geom_smooth(aes(df$df.x, df$charge), se = FALSE, span = 0.6, color=graphCol2) +
+  geom_line(data=df2, aes(X, Y), color="#FFFFFF", size=6) +
+  geom_line(data=df2, aes(X, Y), color=graphCol1, size=1) +
+  geom_vline(xintercept=59, linetype="dashed", color=graphCol3_dark, size=1) +
+  geom_vline(xintercept=86, linetype="dashed", color=graphCol3_dark, size=1) +
+  geom_hline(yintercept=83.2, linetype="dashed", color=graphCol3_dark, size=1) +
+  geom_hline(yintercept=100, linetype="dashed", color=graphCol3_dark, size=1) +
+  #annotate("text", x = 30-15/2, y = 4.05, label = "Battery cell voltage", color=graphCol3_dark, size = rel(3)) +
+  annotate("text", x = 86+2, y = 40, label = "Full charging duration", color=graphCol3_dark, size = rel(3), angle=90) +
+  annotate("text", x = 59+5, y = 40, label = "", color=graphCol3_dark, size = rel(3), angle=90) +
+  annotate("text", x = 5, y = 83.2-8, label = "CC", color=graphCol3_dark, size = rel(3)) +
+  annotate("text", x = 5, y = 83.2+8, label = "CV", color=graphCol3_dark, size = rel(3)) +
+  annotate("text", x = 5, y = 100+8, label = "Full capacity", color=graphCol3_dark, size = rel(3)) +
+  annotate("text", x = 59-4, y = 25*1/4, label = "CC", color=graphCol3_dark, size = rel(3)) +
+  annotate("text", x = 59+4, y = 25*1/4, label = "CV", color=graphCol3_dark, size = rel(3)) +
+  coord_cartesian(xlim=c(0, 90), ylim=c(0, 110)) +
+  scale_x_continuous(breaks = seq(0, 90, 20)) +
+  scale_y_continuous(breaks = seq(0, 100, 25),
+                     sec.axis = sec_axis(trans=~.*1, name=" ", breaks=seq(0, 100, 25))
+  ) +
+  labs(x="Charging time [s]", y="Charging level [\\%] of capacity")
 
 dev.off()
 
@@ -445,23 +499,23 @@ for (i in 1:nrow(logfiles)) {
 # Filter Sections Entries ###########################################
 
 sections.all.filtered <- sections.all[! is.na(sections.all$power_mean), ]
+sections.all.filtered.solo <- sections.all[! is.na(sections.all$power_mean) & sections.all$model == "Solo", ]
 
 # Calculate Combined Data ###########################################
 
 combined_angle_data <- GetCombinedAngleData(sections.all.filtered)
+combined_angle_data.solo <- GetCombinedAngleData(sections.all.filtered.solo)
 
 # Process ACF lags ##################################################
 # (already filtered)
 
-sections_considered <- sections.all[! is.na(sections.all$power_mean) & sections.all$model == "Solo", ]
-combined <- GetCombinedAngleData(sections_considered)
 
-table_filtered <- sections.all.table[flightcmd_id %in% sections_considered$flightcmd_id]
+table_filtered <- sections.all.table[flightcmd_id %in% sections.all.filtered.solo$flightcmd_id]
 
 all_pacf <- list()
-for (angle in combined$cmd_angle) {
+for (angle in combined_angle_data.solo$cmd_angle) {
   print(angle)
-  flightcmd_ids <- sections_considered[sections_considered$cmd_angle==angle, ]$flightcmd_id
+  flightcmd_ids <- sections.all.filtered.solo[sections.all.filtered.solo$cmd_angle==angle, ]$flightcmd_id
   sum <- list(rep(0,30))
   #print(length(flightcmd_ids))
   for (id_x in flightcmd_ids) {
@@ -475,22 +529,48 @@ for (angle in combined$cmd_angle) {
   print(ciborder)
   
   #Find highes lag above confidence interval
-  maxindex <- max(which(mean$pacf > 1/2*ciborder))
+  maxindex <- max(which(mean$pacf > 1/10*ciborder))
   if (is.infinite(maxindex)) maxindex <- nrow(mean)
   
   print(maxindex)
   #Reduce table accordingly
-  mean_pacf_reduced <- c(mean$pacf[1:maxindex], rep(0,length(mean$pacf)-maxindex))
+  mean_pacf_reduced <- c(mean$pacf[1:maxindex], rep(NA,length(mean$pacf)-maxindex))
   
-  all_pacf = rbind(all_pacf, c(angle, mean_pacf_reduced))
+  all_pacf = rbind(all_pacf, c(as.numeric(angle), as.numeric(mean_pacf_reduced)))
   
   #print(mean$pacf)
 }
 #print(all_acf)
-print(xtable(all_pacf[,c(1,2:10)], type="latex"))
-print(xtable(all_pacf[,c(1,11:20)], type="latex"))
+print(xtable(all_pacf, type="latex", digits = 3))
+print(xtable(all_pacf[,c(1,2:10)], type="latex", digits = 3))
+print(xtable(all_pacf[,c(1,11:20)], type="latex", digits = 3))
+print(xtable(combined_angle_data.solo[c(1,3,4)], type="latex", digits = c(0,0,2,3)))
 
+# Prediction ########################################################
 
+quantile <- 0.95
+seconds <- 500 / 3.106
+angle <- 45
+
+angle_line <- 8
+
+f <- function(h) {
+  if (h+1 < ncol(all_pacf) && !is.na(all_pacf[[angle_line,h+1]]))
+    (n-h) * all_pacf[[angle_line,h+1]]
+  else 0
+}
+
+samples_per_second <- 10 #fixed
+n <- seconds * samples_per_second                                                # in [s * 1/s]
+consumption_mean <- 300.7 * seconds / 60 / 60                                    # in [Wh]
+consumption_var <- (n * all_pacf[[angle_line,1+1]] + 2 * sum(sapply(2:(n), f))) / (samples_per_second*samples_per_second)
+consumption_quantile <- qnorm(quantile, consumption_mean, sqrt(abs(consumption_var))) # in [Wh]
+
+print(transpose(c(angle=all_pacf[angle_line,1], mean=consumption_mean, var=abs(consumption_var), stddev=sqrt(abs(consumption_var)), quantile=consumption_quantile)))
+# angle     mean         var   stddev  quantile
+# 34.8° 13.446197  4.602009  2.145229 16.974786
+##  45°                      3.325292 18.91582
+# 57.9° 13.446197 23.210463  4.817724 21.370648
 #####################################################################
 # Individual Analysis and Diagrams ##################################
 #####################################################################
@@ -584,6 +664,20 @@ tikz(paste(tikzLocation, "4_maneuver_transition_flight_", id, "_power_plot_R.tex
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
   coord_cartesian(xlim=c(175,215),ylim=c(150,350)) +
+  scale_x_continuous(breaks = seq(0, 750, 5)) +
+  labs(x="Time [s]", y="Power [W]")
+
+dev.off()
+
+
+#####################################################################
+# Maneuver readings plot ##########################################
+
+tikz(paste(tikzLocation, "4_maneuver_flight_power_plot_R.tex", sep = ""), timestamp = FALSE, width=5.9, height=1.5)
+
+ggplot(logdata.curr.hover, aes(TimeRelS, Power)) +
+  geom_line(color=graphCol1) +
+  coord_cartesian(xlim=c(390,450),ylim=c(245,280)) +
   scale_x_continuous(breaks = seq(0, 750, 5)) +
   labs(x="Time [s]", y="Power [W]")
 

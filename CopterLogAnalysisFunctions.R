@@ -313,7 +313,8 @@ GetCombinedAngleData <- function(sections) {
   for (i in 1:length(angles)) {
     angle.sections <- sections[sections$cmd_angle == angles[i], ]
     count <- nrow(angle.sections)
-    speed.mean <- sum(angle.sections$gps_speed) / count
+    speed.mean <- wtd.mean(angle.sections$gps_speed, weights=angle.sections$n_rows, na.rm=FALSE)
+    speed.stddev <- sqrt(wtd.var(angle.sections$gps_speed, weights=angle.sections$n_rows, na.rm=FALSE))
     mean.mean <- sum(angle.sections$power_mean) / count
     current.mean <- sum(angle.sections$current) / count
     current.stddev <- sum(angle.sections$current_stddev) / count
@@ -321,6 +322,7 @@ GetCombinedAngleData <- function(sections) {
     combined[i, "cmd_angle"] <- angles[i]            # angle for combination groups
     combined[i, "sect_count"] <- count               # number of sections combined for mean
     combined[i, "speed_mean"] <- speed.mean          # in [m/s]
+    combined[i, "speed_stddev"] <- speed.stddev      # in [m/s]
     combined[i, "power_mean"] <- mean.mean           # in [W]
     combined[i, "power_stddev"] <- sum.stddeviation  # in [W]
     combined[i, "current_mean"] <- current.mean      # in [A]
