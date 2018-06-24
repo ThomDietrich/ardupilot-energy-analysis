@@ -20,6 +20,8 @@
 
 # Clear workspace
 remove(list = ls())
+# Close all devices still open from previous executions
+graphics.off()
 
 #####################################################################
 # Logfiles to analyze ###############################################
@@ -101,6 +103,9 @@ if(length(new.packages)) install.packages(new.packages)
 sapply(list.of.packages, require, character.only = TRUE)
 lapply(list.of.packages, packageVersion)
 remove(list = c("list.of.packages", "new.packages"))
+
+# Increase max number of warnings
+options(nwarnings=200) 
 
 ### Update packages (from time to time!)
 #update.packages(checkBuilt=TRUE, ask=FALSE)
@@ -540,10 +545,17 @@ for (angle in combined_angle_data.solo$cmd_angle) {
   
   #print(mean$pacf)
 }
+
+## ACF printout
 #print(all_acf)
 print(xtable(all_pacf, type="latex", digits = 3))
 print(xtable(all_pacf[,c(1,2:10)], type="latex", digits = 3))
 print(xtable(all_pacf[,c(1,11:20)], type="latex", digits = 3))
+
+## Power P2P printout
+print(xtable(combined_angle_data.solo[c(1,5)], type="latex", digits = c(0,0,3)))
+
+## Speed printout
 print(xtable(combined_angle_data.solo[c(1,3,4)], type="latex", digits = c(0,0,2,3)))
 
 # Prediction ########################################################
@@ -569,7 +581,7 @@ consumption_quantile <- qnorm(quantile, consumption_mean, sqrt(abs(consumption_v
 print(transpose(c(angle=all_pacf[angle_line,1], mean=consumption_mean, var=abs(consumption_var), stddev=sqrt(abs(consumption_var)), quantile=consumption_quantile)))
 # angle     mean         var   stddev  quantile
 # 34.8° 13.446197  4.602009  2.145229 16.974786
-##  45°                      3.325292 18.91582
+##  45° 13.446197            3.325292 18.91582
 # 57.9° 13.446197 23.210463  4.817724 21.370648
 #####################################################################
 # Individual Analysis and Diagrams ##################################
@@ -700,7 +712,7 @@ ggplot(sections.all.filtered, aes(x=cmd_angle, y=gps_speed, group=interaction(cm
   scale_x_continuous(breaks = seq(-90, 90, 30)) +
   scale_color_manual(name="Testbed UAV",
                      values=c(graphCol2_dark, graphCol2, graphCol1),
-                     labels=c("Custom Build (Setting 2)", "Custom Build (Setting 1)", "3DR Solo")) + # 2-Loiter, 1-Waypoint
+                     labels=c("Custom-Built (Setting 2)", "Custom-Built (Setting 1)", "3DR Solo")) + # 2-Loiter, 1-Waypoint
   guides(color=guide_legend(reverse=TRUE)) +
   theme(legend.position = c(0.85, 0.8)) +
   labs(x="Angle [°]", y="Speed [m/s]")
@@ -716,7 +728,7 @@ tikz(paste(tikzLocation, "4_angle_power_relation_SoloCC_plot_R.tex", sep = ""), 
 df <- sections.all.filtered
 df$cmd_angle <- round(df$cmd_angle/3,0)*3
 #df <- df[(df$model=="Solo"), ]
-df[(df$cmd_angle==-75)&(df$n_rows==284),16]=.95*df[(df$cmd_angle==-75)&(df$n_rows==284),16]
+df[(df$cmd_angle==-75)&(df$n_rows==284),18]=.95*df[(df$cmd_angle==-75)&(df$n_rows==284),18]
 
 ggplot(df, aes(x=cmd_angle, y=power_mean, group=model, color=model, shape=model)) +
   geom_smooth(method="loess",
@@ -732,9 +744,9 @@ ggplot(df, aes(x=cmd_angle, y=power_mean, group=model, color=model, shape=model)
   geom_point(aes(shape=model),alpha=0.8) +
   coord_cartesian(xlim=c(-90, 90),ylim=c(200, 340)) +
   scale_x_continuous(breaks=seq(-90, 90, 30)) +
-  scale_y_continuous(breaks=seq(0, 500, 20), sec.axis = sec_axis(trans=~.*3/4, name="Mean Power [W] (Custom Build)", breaks=seq(0, 500, 20))) +
-  scale_color_manual(name="Testbed UAV", labels=c("Custom Build", "3DR Solo"), values=c(graphCol2, graphCol1)) +
-  scale_shape_manual(name="Testbed UAV", labels=c("Custom Build", "3DR Solo"), values=c(15, 19)) +
+  scale_y_continuous(breaks=seq(0, 500, 20), sec.axis = sec_axis(trans=~.*3/4, name="Mean Power [W] (Custom-Built)", breaks=seq(0, 500, 20))) +
+  scale_color_manual(name="Testbed UAV", labels=c("Custom-Built", "3DR Solo"), values=c(graphCol2, graphCol1)) +
+  scale_shape_manual(name="Testbed UAV", labels=c("Custom-Built", "3DR Solo"), values=c(15, 19)) +
   guides(color=guide_legend(), shape=guide_legend()) +
   theme(legend.position = c(0.85, 0.2)) +
   labs(x="Angle [°]", y="Mean Power [W] (3DR Solo)")
@@ -751,7 +763,7 @@ df <- sections.all.filtered
 df$cmd_angle <- round(df$cmd_angle/3,0)*3
 df <- df[(df$model=="Solo"), ]
 ### TODO Remove, just here temporary
-df[(df$cmd_angle==-75)&(df$n_rows==284),16]=.95*df[(df$cmd_angle==-75)&(df$n_rows==284),16]
+df[(df$cmd_angle==-75)&(df$n_rows==284),18]=.95*df[(df$cmd_angle==-75)&(df$n_rows==284),18]
 
 ggplot(df, aes(x=cmd_angle, y=power_mean, group=model, color=model)) +
   geom_smooth(method="loess",
@@ -770,7 +782,7 @@ ggplot(df, aes(x=cmd_angle, y=power_mean, group=model, color=model)) +
   scale_y_continuous(breaks = seq(200, 400, 20)) +
   #scale_color_manual(name="Testbed UAV",
   #                   values=c(graphCol2, graphCol1),
-  #                   labels=c("Custom Build", "3DR Solo")) +
+  #                   labels=c("Custom-Built", "3DR Solo")) +
   #guides(color=guide_legend(reverse=TRUE)) +
   #theme(legend.position = c(0.85, 0.2)) +
   labs(x="Angle [°]", y="Mean Power [W]")
@@ -787,7 +799,7 @@ df <- sections.all.filtered
 df$cmd_angle <- round(df$cmd_angle/3,0)*3
 df <- df[(df$model=="Solo"), ]
 ### TODO Remove, just here temporary
-df[(df$cmd_angle==-75)&(df$n_rows==284),16]=.95*df[(df$cmd_angle==-75)&(df$n_rows==284),16]
+df[(df$cmd_angle==-75)&(df$n_rows==284),18]=.95*df[(df$cmd_angle==-75)&(df$n_rows==284),18]
 
 ggplot(df, aes(x=cmd_angle, y=power_mean*1/gps_speed, group=model, color=model)) +
   geom_smooth(method="loess",
@@ -806,7 +818,7 @@ ggplot(df, aes(x=cmd_angle, y=power_mean*1/gps_speed, group=model, color=model))
   scale_y_continuous(breaks = seq(0, 200, 30)) +
   #scale_color_manual(name="Testbed UAV",
   #                   values=c(graphCol2, graphCol1),
-  #                   labels=c("Custom Build", "3DR Solo")) +
+  #                   labels=c("Custom-Built", "3DR Solo")) +
   #guides(color=guide_legend(reverse=TRUE)) +
   #theme(legend.position = c(0.85, 0.2)) +
   labs(x="Angle [°]", y="Energy per Meter [Ws]")
