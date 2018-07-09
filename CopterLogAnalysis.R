@@ -485,7 +485,7 @@ ggplot(dfff, aes(x=index, y=fvalue, group=ww, color = ww)) +
   geom_line() +
   geom_point(data = subset(dfff, max==TRUE), size = rel(0.5)) +
   geom_text(data = subset(dfff, max==TRUE), aes(label=ww), show.legend = FALSE, size=rel(2), color=graphCol3_darkdark, vjust=1.5) +
-  geom_segment(aes(x=5.5, xend=5.5, y=-500, yend=1750), size=rel(1), arrow=arrow(length = unit(0.15, "cm")), lineend = "butt", color=graphCol3_dark) +
+  geom_segment(aes(x=5.5, xend=5.5, y=-500, yend=1750), size=rel(1), arrow=arrow(length = unit(0.15, "cm")), lineend = "butt", linejoin="mitre", color=graphCol3_dark) +
   annotate("text", x = 5.5, y = -800, label = "$w$", color=graphCol3_darkdark, size = rel(4)) +
   scale_color_grey(start=0.3, end=0.8) +
   scale_x_discrete(labels=c(" ", "A", "B", "C", " ", "D", "E")) +
