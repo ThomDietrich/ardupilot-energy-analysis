@@ -87,9 +87,12 @@ referenceVoltage         <- 4 * 3.7
 graphCol1 <- "#4682B4" #steelblue
 graphCol2 <- "#B8850A" #mygold
 graphCol2_dark <- "goldenrod4"
-graphCol3 <- "#B3B3B3" #mygray
-graphCol3_dark <- "#737373"
-graphCol3_darkdark <- "#434343"
+#graphCol3 <- "#B3B3B3" #mygray
+#graphCol3_dark <- "#737373"
+#graphCol3_darkdark <- "#434343"
+graphCol3 <- gray(0.70) #mygray
+graphCol3_dark <- gray(0.45)
+graphCol3_darkdark <- gray(0.25)
 graphCol4 <- "#780116" #myred
 
 #####################################################################
@@ -123,7 +126,7 @@ theme_custom <- function () {
   theme_light() %+replace% 
     theme(
       panel.background  = element_blank(),
-      axis.title = element_text(size = rel(0.8)),
+      axis.title = element_text(size = rel(0.8), color="black"),
       axis.ticks=element_blank(),
       legend.text = element_text(size = rel(0.8)),
       legend.title = element_text(size = rel(0.8)),
@@ -134,6 +137,7 @@ theme_set(theme_custom())
 
 options(tikzDefaultEngine = "xetex")
 tikzLocation = "../Dissertation/tikz/"
+textwidth = 5.8
 
 #####################################################################
 # Load functions files ##############################################
@@ -262,7 +266,7 @@ line_hist_plot <- function(data, x, y, xlab = NULL, xlab2 = "Sample Count", ylab
   plot_grid(plot1, plot2, rel_widths = c(3, 1))
 }
 
-tikz(paste(tikzLocation, "4_hover_linehist_R.tex", sep = "/"), standAlone=TRUE, timestamp = FALSE, width=5.9, height=2.5)
+tikz(paste(tikzLocation, "4_hover_linehist_R.tex", sep = "/"), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=2.5)
 line_hist_plot(data = logdata.curr.hover, x = logdata.curr.hover$TimeRelS-head(logdata.curr.hover$TimeRelS), y = logdata.curr.hover$Power, xlab = 'Time [s]', ylab = 'Power [W]')
 dev.off()
 
@@ -270,7 +274,7 @@ dev.off()
 #####################################################################
 # Quantile-Quantile plot to prove normal distribution ###############
 
-tikz(paste(tikzLocation, "4_hover_quantile-quantile_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=4, height=4)
+tikz(paste(tikzLocation, "4_hover_quantile-quantile_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=4, height=4)
 
 y     <- quantile(logdata.curr.hover$Power, c(0.25, 0.75)) # Find the 1st and 3rd quartiles
 x     <- qnorm(c(0.25, 0.75))         # Find the matching normal values on the x-axis
@@ -293,7 +297,7 @@ dev.off()
 #####################################################################
 # CCCV ##############################################################
 
-tikz(paste(tikzLocation, "2_CCCV_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=3.5)
+tikz(paste(tikzLocation, "2_CCCV_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=3.5)
 
 df <- read.table(header = TRUE, text = 'df.x charge battery.volt current
      0    0 3.71 4
@@ -323,7 +327,7 @@ plot1 <- ggplot(df, aes(df.x, battery.volt)) +
   annotate("text", x = 80, y = 3.85, label = "Charging current", color=graphCol3_dark, size=rel(3)) +
   annotate("text", x = 20, y = 3.75, label = "Cell voltage", color=graphCol3_dark, size = rel(3)) +
   annotate("text", x = 59-4, y = 3.65, label = "CC", color=graphCol3_dark, size=rel(3)) +
-  annotate("text", x = 59+4, y = 3.65, label = "CV", color=graphCol3_dark, siza= e=rel(3)) +
+  annotate("text", x = 59+4, y = 3.65, label = "CV", color=graphCol3_dark, size=rel(3)) +
   coord_cartesian(xlim=c(0, 90), ylim=c(3.575, 4.3)) +
   scale_x_continuous(breaks = seq(0, 90, 20)) +
   scale_y_continuous(breaks = seq(0, 6, 0.2),
@@ -354,7 +358,7 @@ dev.off()
 
 # CCCV model ########################################################
 
-tikz(paste(tikzLocation, "2_CCCV_model_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=2.5)
+tikz(paste(tikzLocation, "2_CCCV_model_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=2.5)
 
 df <- read.table(header = TRUE, text = 'df.x charge battery.volt current
                  0    0 3.71 4
@@ -408,7 +412,7 @@ dev.off()
 
 # Discharge #########################################################
 
-tikz(paste(tikzLocation, "2_Discharge_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=1.75)
+tikz(paste(tikzLocation, "2_Discharge_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=1.75)
 
 df <- read.table(header = TRUE, text = 'soc battery.volt
   100 4.1
@@ -479,7 +483,7 @@ for (ww in w) {
 }
 dfff
 
-tikz(paste(tikzLocation, "6_bi_objective_result_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=2.5)
+tikz(paste(tikzLocation, "6_bi_objective_result_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=2.5)
 
 ggplot(dfff, aes(x=index, y=fvalue, group=ww, color = ww)) +
   geom_line() +
@@ -667,7 +671,7 @@ ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.
 # Do not change! For results: 23
 id <- 23
 
-tikz(paste(tikzLocation, "4_complete_flight_", id, "_power_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=4)
+tikz(paste(tikzLocation, "4_complete_flight_", id, "_power_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=4)
 
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
@@ -708,7 +712,7 @@ annotate.labels <- data.frame(
   "label" = c("Log", "Initialize", "Standby", "Arm")
 )
 
-tikz(paste(tikzLocation, "4_flight_", id, "_standby_power_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=3)
+tikz(paste(tikzLocation, "4_flight_", id, "_standby_power_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=3)
 
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
@@ -727,7 +731,7 @@ dev.off()
 # For results: 24
 id <- 24
 
-tikz(paste(tikzLocation, "4_maneuver_transition_flight_", id, "_power_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=3)
+tikz(paste(tikzLocation, "4_maneuver_transition_flight_", id, "_power_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=3)
 
 ggplot(logdata.all.curr[[id]], aes(logdata.all.curr[[id]]$TimeRelS, logdata.all.curr[[id]]$Power)) +
   geom_line(color=graphCol1) +
@@ -741,7 +745,7 @@ dev.off()
 #####################################################################
 # Maneuver readings plot ##########################################
 
-tikz(paste(tikzLocation, "4_maneuver_flight_power_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=1.5)
+tikz(paste(tikzLocation, "4_maneuver_flight_power_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=1.5)
 
 ggplot(logdata.curr.hover, aes(TimeRelS, Power)) +
   geom_line(color=graphCol1) +
@@ -758,7 +762,7 @@ dev.off()
 #####################################################################
 # Speed from Angle relation plot ####################################
 
-tikz(paste(tikzLocation, "4_angle_speed_relation_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=3)
+tikz(paste(tikzLocation, "4_angle_speed_relation_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=3)
 
 ggplot(sections.all.filtered, aes(x=cmd_angle, y=gps_speed, group=interaction(cmd_angle, model, cmd_name), color=interaction(model,cmd_name))) +
   geom_jitter(width=8, alpha=0.2) +
@@ -779,7 +783,7 @@ dev.off()
 #####################################################################
 # Power from angle relation for Solo+CC plot ########################
 
-tikz(paste(tikzLocation, "4_angle_power_relation_SoloCC_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=3.0)
+tikz(paste(tikzLocation, "4_angle_power_relation_SoloCC_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=3.0)
 
 df <- sections.all.filtered
 df$cmd_angle <- round(df$cmd_angle/3,0)*3
@@ -813,7 +817,7 @@ dev.off()
 #####################################################################
 # Power from angle relation for Solo plot ###########################
 
-tikz(paste(tikzLocation, "4_angle_power_relation_Solo_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=3.0)
+tikz(paste(tikzLocation, "4_angle_power_relation_Solo_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=3.0)
 
 df <- sections.all.filtered
 df$cmd_angle <- round(df$cmd_angle/3,0)*3
@@ -849,7 +853,7 @@ dev.off()
 #####################################################################
 # Energy per meter from angle relation for Solo plot ################
 
-tikz(paste(tikzLocation, "4_angle_energy_permeter_relation_Solo_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=2.3)
+tikz(paste(tikzLocation, "4_angle_energy_permeter_relation_Solo_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=2.3)
 
 df <- sections.all.filtered
 df$cmd_angle <- round(df$cmd_angle/3,0)*3
@@ -864,7 +868,7 @@ ggplot(df, aes(x=cmd_angle, y=power_mean*1/gps_speed, group=model, color=model))
               span=0.5,
               level=0.99975) +
   #geom_boxplot(aes(group=interaction(cmd_angle, model)),
-  #             width=5.9,
+  #             width=textwidth,
   #             color="gray20",
   #             fill=alpha("white", 0.5),
   #             outlier.alpha = 0.5) +
@@ -911,7 +915,7 @@ text_size <- rel(3)
 
 # Design: https://statistics.laerd.com/statistical-guides/normal-distribution-calculations.php
 
-tikz(paste(tikzLocation, "4_normal_distribution_plot_R.tex", sep = ""), standAlone=TRUE, timestamp = FALSE, width=5.9, height=1.9)
+tikz(paste(tikzLocation, "4_normal_distribution_plot_R.tex", sep = ""), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=1.9)
 
 plot_quantiles <- ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
   stat_function(fun = dnorm_full, geom = "area", fill = graphCol1, alpha = 0.1) +
@@ -1000,14 +1004,14 @@ decomposition_plot <- function(data, x, y, xlab = NULL, xlab2 = "Sample Count", 
   plot_grid(plot1, plot2, plot3, ncol = 1, rel_heights = c(2, 1, 1.2))
 }
 
-tikz(paste(tikzLocation, "4_hover_arima_decomposition_R.tex", sep = "/"), standAlone=TRUE, timestamp = FALSE, width=5.9, height=3.5)
+tikz(paste(tikzLocation, "4_hover_arima_decomposition_R.tex", sep = "/"), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=3.5)
 decomposition_plot(data = logdata.curr.hover, x = logdata.curr.hover$TimeRelS-head(logdata.curr.hover$TimeRelS), y = logdata.curr.hover$Power, xlab = 'Time [s]', ylab = 'Power [W]')
 dev.off()
 
 #####################################################################
 # ACF ###############################################################
 
-tikz(paste(tikzLocation, "4_hover_arima_acf_pacf_R.tex", sep = "/"), standAlone=TRUE, timestamp = FALSE, width=5.9, height=2.9)
+tikz(paste(tikzLocation, "4_hover_arima_acf_pacf_R.tex", sep = "/"), standAlone=TRUE, timestamp=FALSE, width=textwidth, height=2.9)
 
 # Quick check
 auto.arima(logdata.curr.hover$Power)
